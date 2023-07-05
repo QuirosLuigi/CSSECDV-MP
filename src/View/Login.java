@@ -1,20 +1,21 @@
 
 package View;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
+import Controller.SQLite;
+import Model.User;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 import javax.swing.JOptionPane;
 
 public class Login extends javax.swing.JPanel {
 
     public Frame frame;
+    public SQLite sqlite;
     
     public Login() {
         initComponents();
+        sqlite = new SQLite(); // Create an instance of the SQLite class
     }
 
     @SuppressWarnings("unchecked")
@@ -94,61 +95,48 @@ private void loginBtnActionPerformed(java.awt.event.ActionEvent evt) {
     String username = usernameFld.getText();
     String password = passwordFld.getText();
 
-    // Establish a connection to the SQLite database
-    Connection connection = null;
-    try {
-        connection = DriverManager.getConnection("jdbc:sqlite:database.db");
-
-        // Create a prepared statement to query the "users" table
-        String query = "SELECT * FROM users WHERE username = ? AND password = ?";
-        PreparedStatement statement = connection.prepareStatement(query);
-        statement.setString(1, username);
-        statement.setString(2, password);
-
-        // Execute the query
-        ResultSet resultSet = statement.executeQuery();
-
-        // Check if the query returned any rows (indicating a successful login)
-        if (resultSet.next()) {
-            int role = resultSet.getInt("role");
-            // Perform role-based navigation
-            switch (role) {
-                case 1:
-                    // Show a popup indicating that the user is disabled
-                    JOptionPane.showMessageDialog(null, "User is disabled");
-                    break;
-                case 2:
-                    // Execute the ClientNav() method on the "frame" object
-                    frame.ClientNav();
-                    break;
-                case 3:
-                    frame.StaffNav();
-                case 4:
-                    // Execute the StaffNav() method on the "frame" object
-                    frame.ManagerNav();
-                    break;
-                case 5:
-                    // Execute the AdminNav() method on the "frame" object
-                    frame.AdminNav();
-                    break;
-                default:
-                    // Handle unexpected or unsupported role values
-                    System.out.println("Invalid role");
-                    break;
+        System.out.println("=====================\nSaved Username: " + username + " | Password: " + password);
+         
+         //check if it belongs to registered users
+         ArrayList<User> users = sqlite.getUsers();
+         for(int nCtr = 0; nCtr < users.size(); nCtr++){
+            if (username.equals(users.get(nCtr).getUsername()) && password.equals(users.get(nCtr).getPassword())) {
+               int role = users.get(nCtr).getRole();
+                // Perform role-based navigation
+                switch (role) {
+                    case 1:
+                        // Show a popup indicating that the user is disabled
+                        JOptionPane.showMessageDialog(null, "User is disabled");
+                        break;
+                    case 2:
+                        // Execute the ClientNav() method on the "frame" object
+                        System.out.println("went inside ClientNav");
+                        frame.ClientNav();
+                        break;
+                    case 3:
+                        System.out.println("went inside StaffNav");
+                        frame.StaffNav();
+                        break;
+                    case 4:
+                        // Execute the StaffNav() method on the "frame" object
+                        System.out.println("went inside ManagerNav");
+                        frame.ManagerNav();
+                        break;
+                    case 5:
+                        // Execute the AdminNav() method on the "frame" object
+                        System.out.println("went inside AdminNav");
+                        frame.AdminNav();
+                        break;
+                    default:
+                        // Handle unexpected or unsupported role values
+                        System.out.println("Invalid role");
+                        break;
+                }
             }
-        } else {
-            // Handle unsuccessful login (display an error message, etc.)
-            System.out.println("Invalid username or password");
-        }
-
-        // Close the result set, statement, and connection
-        resultSet.close();
-        statement.close();
-        connection.close();
-    } catch (SQLException e) {
-        e.printStackTrace();
-        // Handle any database-related errors
-    }
+             else {
+                System.out.println ("Did not match with " + users.get(nCtr).getUsername() + " | " + users.get(nCtr).getPassword());
+            }   
+         }
 }
                                         
 

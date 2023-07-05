@@ -252,12 +252,10 @@ public class Frame extends javax.swing.JFrame {
     public void StaffNav(){
         frameView.show(Container, "homePnl");
         contentView.show(Content, "staffHomePnl");
-
     }
     public void ManagerNav(){
         frameView.show(Container, "homePnl");
         contentView.show(Content, "managerHomePnl");
-
     }
     public void ClientNav(){
         frameView.show(Container, "homePnl");
