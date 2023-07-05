@@ -245,21 +245,38 @@ public class Frame extends javax.swing.JFrame {
     }
     
     public void AdminNav(){
+        adminBtn.setVisible(true);
+        staffBtn.setVisible(false);
+        managerBtn.setVisible(false);
+        clientBtn.setVisible(false);
         frameView.show(Container, "homePnl");
         contentView.show(Content, "adminHomePnl");
     }
 
     public void StaffNav(){
+        adminBtn.setVisible(false);
+        staffBtn.setVisible(true);
+        managerBtn.setVisible(false);
+        clientBtn.setVisible(false);
         frameView.show(Container, "homePnl");
         contentView.show(Content, "staffHomePnl");
     }
     public void ManagerNav(){
+        adminBtn.setVisible(false);
+        staffBtn.setVisible(false);
+        managerBtn.setVisible(true);
+        clientBtn.setVisible(false);
         frameView.show(Container, "homePnl");
         contentView.show(Content, "managerHomePnl");
     }
     public void ClientNav(){
+        adminBtn.setVisible(false);
+        staffBtn.setVisible(false);
+        managerBtn.setVisible(false);
+        clientBtn.setVisible(true);
         frameView.show(Container, "homePnl");
         contentView.show(Content, "clientHomePnl");
+        
     }
     
     public void loginNav(){
