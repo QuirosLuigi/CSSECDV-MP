@@ -1,14 +1,27 @@
 
 package View;
+import java.security.spec.KeySpec;
+import java.util.ArrayList;
+import java.util.Base64;
+import Controller.SQLite;
+import Model.User;
 
+import javax.crypto.Cipher;
+import javax.crypto.SecretKey;
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.PBEKeySpec;
+import javax.crypto.spec.SecretKeySpec;
 import javax.swing.JOptionPane;
 
 public class Register extends javax.swing.JPanel {
 
     public Frame frame;
+    public SQLite sqlite;
     
     public Register() {
+        sqlite = new SQLite(); // Create an instance of the SQLite class
         initComponents();
+        
     }
 
     @SuppressWarnings("unchecked")
@@ -21,6 +34,9 @@ public class Register extends javax.swing.JPanel {
         jLabel1 = new javax.swing.JLabel();
         confpassFld = new javax.swing.JTextField();
         backBtn = new javax.swing.JButton();
+        
+
+
 
         registerBtn.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
         registerBtn.setText("REGISTER");
@@ -102,17 +118,24 @@ public class Register extends javax.swing.JPanel {
         Boolean check1 = false;
         Boolean check2 = false;
         Boolean check3 = false;
-
+        int match = 0;
+        ArrayList<User> users = sqlite.getUsers();
+        for(int nCtr = 0; nCtr < users.size(); nCtr++){
+            if (usernameFld.getText().equals(users.get(nCtr).getUsername())){
+                match++;
+            }
+        }
+        
         //Check if username already exists (LUI)
         //if pass
-        if (check1) //change
+        if (match==0) //change
             check1 = true;
         else
             JOptionPane.showMessageDialog(null, "ERROR: This username is unavailable!");
         
         //Check validity of password (LUI)
         //if pass
-        if (check2) //change
+        if (validateCheckboxInput(passwordFld.getText())) //change
             check2 = true;
         else
             JOptionPane.showMessageDialog(null, "ERROR: Passwords must have "
@@ -128,12 +151,12 @@ public class Register extends javax.swing.JPanel {
         
  
         //Add user to the database if it passes all checks
-        if (!check1 && !check2 && !check3) {
+        if (check1 && check2 && check3) {
             
             //Hash password before entering the database (LUI)
-            
-            
-            frame.registerAction(usernameFld.getText(), passwordFld.getText(), confpassFld.getText());
+            String encrypted = encryptPassword(passwordFld.getText());
+            System.out.println(encrypted);            
+            frame.registerAction(usernameFld.getText(), encrypted, encrypted);
             frame.loginNav(); 
         }
     }//GEN-LAST:event_registerBtnActionPerformed
@@ -151,4 +174,37 @@ public class Register extends javax.swing.JPanel {
     private javax.swing.JButton registerBtn;
     private javax.swing.JTextField usernameFld;
     // End of variables declaration//GEN-END:variables
+
+
+
+    /* Encrypts the password input */
+    public static String encryptPassword(String password) {
+        try {
+            // Generate a secret key from the password
+            SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
+            KeySpec spec = new PBEKeySpec(password.toCharArray(), new byte[16], 65536, 256);
+            SecretKey secretKey = new SecretKeySpec(factory.generateSecret(spec).getEncoded(), "AES");
+
+            // Encrypt the password using AES
+            Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
+            cipher.init(Cipher.ENCRYPT_MODE, secretKey);
+            byte[] encryptedBytes = cipher.doFinal(password.getBytes());
+            return Base64.getEncoder().encodeToString(encryptedBytes);
+        } catch (Exception e) {
+            // Handle the exception appropriately
+            e.printStackTrace();
+            return null;
+        }
+    }
+    public static boolean validateCheckboxInput(String input) {
+    // Check if input has at least 8 characters
+    if (input.length() < 8) {
+        return false;
+    }
+
+    // Check if input contains a mix of lowercase and uppercase letters, digits, and special symbols
+    String pattern = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[a-zA-Z\\d@$!%*?&]+$";
+    return input.matches(pattern);
 }
+}
+

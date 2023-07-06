@@ -3,10 +3,20 @@ package View;
 
 import Controller.SQLite;
 import Model.User;
+
+import java.security.SecureRandom;
+import java.security.spec.KeySpec;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Base64;
 
+import javax.crypto.Cipher;
+import javax.crypto.SecretKey;
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.PBEKeySpec;
+import javax.crypto.spec.SecretKeySpec;
 import javax.swing.JOptionPane;
+import javax.swing.JPasswordField;
 
 public class Login extends javax.swing.JPanel {
 
@@ -28,7 +38,9 @@ public class Login extends javax.swing.JPanel {
 
         jLabel1 = new javax.swing.JLabel();
         usernameFld = new javax.swing.JTextField();
-        passwordFld = new javax.swing.JTextField();
+         passwordFld = new javax.swing.JPasswordField();
+         ((JPasswordField) passwordFld).setEchoChar('*');
+        
         registerBtn = new javax.swing.JButton();
         loginBtn = new javax.swing.JButton();
 
@@ -43,6 +55,7 @@ public class Login extends javax.swing.JPanel {
         usernameFld.setBorder(javax.swing.BorderFactory.createTitledBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 2, true), "USERNAME", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 0, 12))); // NOI18N
 
         passwordFld.setBackground(new java.awt.Color(240, 240, 240));
+       
         passwordFld.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         passwordFld.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         passwordFld.setBorder(javax.swing.BorderFactory.createTitledBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 2, true), "PASSWORD", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 0, 12))); // NOI18N
@@ -97,10 +110,13 @@ public class Login extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 private void loginBtnActionPerformed(java.awt.event.ActionEvent evt) {
     String username = usernameFld.getText();
-    String password = passwordFld.getText();
+
+    /* Compare Encrypted password on input vs Encrypted Password on Database */
+    String passText = new String(((JPasswordField) passwordFld).getPassword());
+    String password2 = encryptPassword(passText);
     Boolean match = false;
 
-    System.out.println("=====================\nSaved Username: " + username + " | Password: " + password);
+    System.out.println("=====================\nSaved Username: " + username + " | Password: " + password2);
     
     if (cooldown) {
         JOptionPane.showMessageDialog(null, "Cooldown in progress. Please try again after 30 seconds.");
@@ -110,7 +126,7 @@ private void loginBtnActionPerformed(java.awt.event.ActionEvent evt) {
         //check if it belongs to registered users
     ArrayList<User> users = sqlite.getUsers();
     for(int nCtr = 0; nCtr < users.size() && !match; nCtr++){
-        if (username.equals(users.get(nCtr).getUsername()) && password.equals(users.get(nCtr).getPassword())) {
+        if (username.equals(users.get(nCtr).getUsername()) && password2.equals(users.get(nCtr).getPassword())) {
             match = true;
             int role = users.get(nCtr).getRole();
             // Perform role-based navigation
@@ -174,8 +190,30 @@ private void loginBtnActionPerformed(java.awt.event.ActionEvent evt) {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel jLabel1;
     private javax.swing.JButton loginBtn;
-    private javax.swing.JTextField passwordFld;
+    private static javax.swing.JTextField passwordFld;
     private javax.swing.JButton registerBtn;
     private javax.swing.JTextField usernameFld;
     // End of variables declaration//GEN-END:variables
+
+
+
+
+    public static String encryptPassword(String password) {
+        try {
+            // Generate a secret key from the password
+            SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
+            KeySpec spec = new PBEKeySpec(password.toCharArray(), new byte[16], 65536, 256);
+            SecretKey secretKey = new SecretKeySpec(factory.generateSecret(spec).getEncoded(), "AES");
+
+            // Encrypt the password using AES
+            Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
+            cipher.init(Cipher.ENCRYPT_MODE, secretKey);
+            byte[] encryptedBytes = cipher.doFinal(password.getBytes());
+            return Base64.getEncoder().encodeToString(encryptedBytes);
+        } catch (Exception e) {
+            // Handle the exception appropriately
+            e.printStackTrace();
+            return null;
+        }
+    }
 }
