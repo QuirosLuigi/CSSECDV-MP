@@ -110,6 +110,7 @@ private void loginBtnActionPerformed(java.awt.event.ActionEvent evt) {
                         break;
                     case 2:
                         // Execute the ClientNav() method on the "frame" object
+                        JOptionPane.showMessageDialog(null, "Went inside Client Nav");
                         System.out.println("went inside ClientNav");
                         frame.ClientNav();
                         break;
