@@ -1,6 +1,8 @@
 
 package View;
 
+import javax.swing.JOptionPane;
+
 public class Register extends javax.swing.JPanel {
 
     public Frame frame;
@@ -97,8 +99,43 @@ public class Register extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void registerBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_registerBtnActionPerformed
-        frame.registerAction(usernameFld.getText(), passwordFld.getText(), confpassFld.getText());
-        frame.loginNav();
+        Boolean check1 = false;
+        Boolean check2 = false;
+        Boolean check3 = false;
+
+        //Check if username already exists (LUI)
+        //if pass
+        if (check1) //change
+            check1 = true;
+        else
+            JOptionPane.showMessageDialog(null, "ERROR: This username is unavailable!");
+        
+        //Check validity of password (LUI)
+        //if pass
+        if (check2) //change
+            check2 = true;
+        else
+            JOptionPane.showMessageDialog(null, "ERROR: Passwords must have "
+                    + "\n- atleast 8 characters"
+                    + "\n- a mix of lower and uppercase letters, digits, and special symbols");
+        
+        //Check if password matches confirm password
+        //if pass
+        if (passwordFld.getText().equals(confpassFld.getText()))
+            check3 = true;
+        else
+            JOptionPane.showMessageDialog(null, "ERROR: Confirm password and password does not match!");
+        
+ 
+        //Add user to the database if it passes all checks
+        if (!check1 && !check2 && !check3) {
+            
+            //Hash password before entering the database (LUI)
+            
+            
+            frame.registerAction(usernameFld.getText(), passwordFld.getText(), confpassFld.getText());
+            frame.loginNav(); 
+        }
     }//GEN-LAST:event_registerBtnActionPerformed
 
     private void backBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_backBtnActionPerformed

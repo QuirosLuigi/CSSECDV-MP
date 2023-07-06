@@ -12,10 +12,14 @@ public class Login extends javax.swing.JPanel {
 
     public Frame frame;
     public SQLite sqlite;
+    private int attempts;
+    private boolean cooldown;
     
     public Login() {
         initComponents();
         sqlite = new SQLite(); // Create an instance of the SQLite class
+        attempts = 0;
+        cooldown = false;
     }
 
     @SuppressWarnings("unchecked")
@@ -94,51 +98,72 @@ public class Login extends javax.swing.JPanel {
 private void loginBtnActionPerformed(java.awt.event.ActionEvent evt) {
     String username = usernameFld.getText();
     String password = passwordFld.getText();
+    Boolean match = false;
 
-        System.out.println("=====================\nSaved Username: " + username + " | Password: " + password);
+    System.out.println("=====================\nSaved Username: " + username + " | Password: " + password);
+    
+    if (cooldown) {
+        JOptionPane.showMessageDialog(null, "Cooldown in progress. Please try again after 30 seconds.");
+        return;
+    }
          
-         //check if it belongs to registered users
-         ArrayList<User> users = sqlite.getUsers();
-         for(int nCtr = 0; nCtr < users.size(); nCtr++){
-            if (username.equals(users.get(nCtr).getUsername()) && password.equals(users.get(nCtr).getPassword())) {
-               int role = users.get(nCtr).getRole();
-                // Perform role-based navigation
-                switch (role) {
-                    case 1:
-                        // Show a popup indicating that the user is disabled
-                        JOptionPane.showMessageDialog(null, "User is disabled");
-                        break;
-                    case 2:
-                        // Execute the ClientNav() method on the "frame" object
-                        JOptionPane.showMessageDialog(null, "Went inside Client Nav");
-                        System.out.println("went inside ClientNav");
-                        frame.ClientNav();
-                        break;
-                    case 3:
-                        System.out.println("went inside StaffNav");
-                        frame.StaffNav();
-                        break;
-                    case 4:
-                        // Execute the StaffNav() method on the "frame" object
-                        System.out.println("went inside ManagerNav");
-                        frame.ManagerNav();
-                        break;
-                    case 5:
-                        // Execute the AdminNav() method on the "frame" object
-                        System.out.println("went inside AdminNav");
-                        frame.AdminNav();
-                        break;
-                    default:
-                        // Handle unexpected or unsupported role values
-                        System.out.println("Invalid role");
-                        break;
-                }
+        //check if it belongs to registered users
+    ArrayList<User> users = sqlite.getUsers();
+    for(int nCtr = 0; nCtr < users.size() && !match; nCtr++){
+        if (username.equals(users.get(nCtr).getUsername()) && password.equals(users.get(nCtr).getPassword())) {
+            match = true;
+            int role = users.get(nCtr).getRole();
+            // Perform role-based navigation
+            switch (role) {
+                case 1:
+                    // Disabled users
+                    JOptionPane.showMessageDialog(null, "This account is disabled!");
+                    break;
+                case 2:
+                    JOptionPane.showMessageDialog(null,"Welcome " + username + "!\nRole: Client");
+                    frame.ClientNav();
+                    break;
+                case 3:
+                    JOptionPane.showMessageDialog(null,"Welcome " + username + "!\nRole: Staff");
+                    frame.StaffNav();
+                    break;
+                case 4:
+                    JOptionPane.showMessageDialog(null,"Welcome " + username + "!\nRole: Manager");
+                    frame.ManagerNav();
+                    break;
+                case 5:
+                    JOptionPane.showMessageDialog(null,"Welcome " + username + "!\nRole: Administrator");
+                    frame.AdminNav();
+                    break;
+                default:
+                    // Handle unexpected or unsupported role values
+                    System.out.println("An error has occured. Please try again later.");
+                    break;
             }
-             else {
-                System.out.println ("Did not match with " + users.get(nCtr).getUsername() + " | " + users.get(nCtr).getPassword());
-            }   
-         }
+        }
+    }
+    //If the user+pass did not match any in the database, INVALID + add to number of attempts
+    if (!match) {
+        attempts++;
+        if (attempts == 5) {
+            cooldown = true;
+            startCooldown();
+        }
+        JOptionPane.showMessageDialog(null, "Invalid Username or Password!");
+    }
 }
+
+    private void startCooldown() {
+        new Thread(() -> {
+            try {
+                Thread.sleep(30 * 1000); // 30 second cooldown
+            } catch (InterruptedException e) {
+                System.out.println("Interrupted cooldown");
+            }
+            attempts = 0;
+            cooldown = false;
+        }).start();
+    }
                                         
 
     private void registerBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_registerBtnActionPerformed

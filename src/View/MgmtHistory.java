@@ -48,6 +48,9 @@ public class MgmtHistory extends javax.swing.JPanel {
 //      LOAD CONTENTS
         ArrayList<History> history = sqlite.getHistory();
         for(int nCtr = 0; nCtr < history.size(); nCtr++){
+            
+            //get username
+            
             Product product = sqlite.getProduct(history.get(nCtr).getName());
             tableModel.addRow(new Object[]{
                 history.get(nCtr).getUsername(), 
@@ -56,7 +59,7 @@ public class MgmtHistory extends javax.swing.JPanel {
                 product.getPrice(), 
                 product.getPrice() * history.get(nCtr).getStock(), 
                 history.get(nCtr).getTimestamp()
-            });
+            }); 
         }
     }
     
