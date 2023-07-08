@@ -119,23 +119,26 @@ public class Register extends javax.swing.JPanel {
         Boolean check2 = false;
         Boolean check3 = false;
         int match = 0;
+        
+        
+        //Check if username already exists
         ArrayList<User> users = sqlite.getUsers();
-        for(int nCtr = 0; nCtr < users.size(); nCtr++){
-            if (usernameFld.getText().equals(users.get(nCtr).getUsername())){
+        for(int ctr = 0; ctr < users.size(); ctr++){
+            if (usernameFld.getText().equals(users.get(ctr).getUsername())){
                 match++;
             }
         }
-        
-        //Check if username already exists (LUI)
         //if pass
-        if (match==0) //change
+        if (usernameFld.getText().equals("")) 
+            JOptionPane.showMessageDialog(null, "ERROR: Username field is blank!");
+        else if (match==0)
             check1 = true;
         else
             JOptionPane.showMessageDialog(null, "ERROR: This username is unavailable!");
         
-        //Check validity of password (LUI)
+        //Check validity of password
         //if pass
-        if (validateCheckboxInput(passwordFld.getText())) //change
+        if (validateCheckboxInput(passwordFld.getText()))
             check2 = true;
         else
             JOptionPane.showMessageDialog(null, "ERROR: Passwords must have "
@@ -162,6 +165,9 @@ public class Register extends javax.swing.JPanel {
     }//GEN-LAST:event_registerBtnActionPerformed
 
     private void backBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_backBtnActionPerformed
+        usernameFld.setText("");
+        passwordFld.setText("");
+        confpassFld.setText("");
         frame.loginNav();
     }//GEN-LAST:event_backBtnActionPerformed
 

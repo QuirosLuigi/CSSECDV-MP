@@ -55,11 +55,11 @@ public class Main {
 //        sqlite.addProduct("Scanner", 10, 100.0);
 //
 //        // Add sample users
-//        sqlite.addUser("admin", "qwerty1234" , 5);
-//        sqlite.addUser("manager", "qwerty1234", 4);
-//        sqlite.addUser("staff", "qwerty1234", 3);
-//        sqlite.addUser("client1", "qwerty1234", 2);
-//        sqlite.addUser("client2", "qwerty1234", 2);
+//        sqlite.addUser("admin", "jTO3rjmRpWixiomrtGJRAg==" , 5);
+//        sqlite.addUser("manager", "jTO3rjmRpWixiomrtGJRAg==", 4);
+//        sqlite.addUser("staff", "jTO3rjmRpWixiomrtGJRAg==", 3);
+//        sqlite.addUser("client1", "jTO3rjmRpWixiomrtGJRAg==", 2);
+//        sqlite.addUser("client2", "jTO3rjmRpWixiomrtGJRAg==", 2);
 //        
 //        
 //        // Get users

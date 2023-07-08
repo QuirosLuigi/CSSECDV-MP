@@ -7,7 +7,9 @@ import Model.User;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
@@ -288,6 +290,25 @@ public class SQLite {
             
         } catch (Exception ex) {
             System.out.print(ex);
+        }
+    }
+    
+    public int validateUser(String username, String password) {
+        String sql = "SELECT * FROM users WHERE username = ? AND password = ?";
+
+        try (Connection conn = DriverManager.getConnection(driverURL);
+            PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, username);
+            stmt.setString(2, password);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                return rs.getInt("role"); // Returns the role number if the user exists in the database
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return 0;
         }
     }
     

@@ -108,66 +108,77 @@ public class Login extends javax.swing.JPanel {
                 .addContainerGap(126, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
-private void loginBtnActionPerformed(java.awt.event.ActionEvent evt) {
-    String username = usernameFld.getText();
+    private void loginBtnActionPerformed(java.awt.event.ActionEvent evt) {
+        String username = usernameFld.getText();
 
-    /* Compare Encrypted password on input vs Encrypted Password on Database */
-    String passText = new String(((JPasswordField) passwordFld).getPassword());
-    String password2 = encryptPassword(passText);
-    Boolean match = false;
+        /* Compare Encrypted password on input vs Encrypted Password on Database */
+        String passText = new String(((JPasswordField) passwordFld).getPassword());
+        String password2 = encryptPassword(passText);
+        Boolean match = false;
 
-    System.out.println("=====================\nSaved Username: " + username + " | Password: " + password2);
-    
-    if (cooldown) {
-        JOptionPane.showMessageDialog(null, "Cooldown in progress. Please try again after 30 seconds.");
-        return;
-    }
-         
+        System.out.println("=====================\nSaved Username: " + username + " | PassText: " + passText + " | Password2: " + password2);
+
+        if (cooldown) {
+            JOptionPane.showMessageDialog(null, "Cooldown in progress. Please try again after 30 seconds.");
+            return;
+        }
+
         //check if it belongs to registered users
-    ArrayList<User> users = sqlite.getUsers();
-    for(int nCtr = 0; nCtr < users.size() && !match; nCtr++){
-        if (username.equals(users.get(nCtr).getUsername()) && password2.equals(users.get(nCtr).getPassword())) {
-            match = true;
-            int role = users.get(nCtr).getRole();
-            // Perform role-based navigation
-            switch (role) {
-                case 1:
-                    // Disabled users
-                    JOptionPane.showMessageDialog(null, "This account is disabled!");
-                    break;
-                case 2:
-                    JOptionPane.showMessageDialog(null,"Welcome " + username + "!\nRole: Client");
-                    frame.ClientNav();
-                    break;
-                case 3:
-                    JOptionPane.showMessageDialog(null,"Welcome " + username + "!\nRole: Staff");
-                    frame.StaffNav();
-                    break;
-                case 4:
-                    JOptionPane.showMessageDialog(null,"Welcome " + username + "!\nRole: Manager");
-                    frame.ManagerNav();
-                    break;
-                case 5:
-                    JOptionPane.showMessageDialog(null,"Welcome " + username + "!\nRole: Administrator");
-                    frame.AdminNav();
-                    break;
-                default:
-                    // Handle unexpected or unsupported role values
-                    System.out.println("An error has occured. Please try again later.");
-                    break;
+        ArrayList<User> users = sqlite.getUsers();
+        for(int ctr = 0; ctr < users.size() && !match; ctr++){
+            System.out.println("\n "+ users.get(ctr).getUsername() +" : Password2: " + password2 + " | GetPassword: " + users.get(ctr).getPassword());
+            if (username.equals(users.get(ctr).getUsername()) && password2.equals(users.get(ctr).getPassword())) {
+                match = true;
+                
+                //Erase user inputs before going to the next page
+                usernameFld.setText("");
+                passwordFld.setText("");
+                
+                int role = users.get(ctr).getRole();
+                
+                // Perform role-based navigation
+                switch (role) {
+                    case 1:
+                        // Disabled users
+                        JOptionPane.showMessageDialog(null, "This account is disabled!");
+                        break;
+                    case 2:
+                        JOptionPane.showMessageDialog(null,"Welcome " + username + "!\nRole: Client");
+                        frame.ClientNav();
+                        break;
+                    case 3:
+                        JOptionPane.showMessageDialog(null,"Welcome " + username + "!\nRole: Staff");
+                        frame.StaffNav();
+                        break;
+                    case 4:
+                        JOptionPane.showMessageDialog(null,"Welcome " + username + "!\nRole: Manager");
+                        frame.ManagerNav();
+                        break;
+                    case 5:
+                        JOptionPane.showMessageDialog(null,"Welcome " + username + "!\nRole: Administrator");
+                        frame.AdminNav();
+                        break;
+                    default:
+                        // Handle unexpected or unsupported role values
+                        System.out.println("An error has occured. Please try again later.");
+                        break;
+                }
             }
         }
-    }
-    //If the user+pass did not match any in the database, INVALID + add to number of attempts
-    if (!match) {
-        attempts++;
-        if (attempts == 5) {
-            cooldown = true;
-            startCooldown();
+        //If the user+pass did not match any in the database, INVALID + add to number of attempts
+        if (!match) {
+            attempts++;
+            if (attempts == 5) {
+                cooldown = true;
+                startCooldown();
+            }
+            JOptionPane.showMessageDialog(null, "Invalid Username or Password!");
         }
-        JOptionPane.showMessageDialog(null, "Invalid Username or Password!");
     }
-}
+    
+    private int validateLogin(String user, String pass) {
+        
+    }
 
     private void startCooldown() {
         new Thread(() -> {
@@ -183,6 +194,8 @@ private void loginBtnActionPerformed(java.awt.event.ActionEvent evt) {
                                         
 
     private void registerBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_registerBtnActionPerformed
+        usernameFld.setText("");
+        passwordFld.setText("");
         frame.registerNav();
     }//GEN-LAST:event_registerBtnActionPerformed
 
