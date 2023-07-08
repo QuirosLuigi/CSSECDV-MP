@@ -140,7 +140,7 @@ public class Register extends javax.swing.JPanel {
         
         //Check validity of password
         //if pass
-        if (validateCheckboxInput(passwordFld.getText()))
+        if (validatePassword(passwordFld.getText()))
             check2 = true;
         else
             JOptionPane.showMessageDialog(null, "ERROR: Passwords must have "
@@ -208,15 +208,15 @@ public class Register extends javax.swing.JPanel {
             return null;
         }
     }
-    public static boolean validateCheckboxInput(String input) {
-    // Check if input has at least 8 characters
-    if (input.length() < 8) {
-        return false;
-    }
+    public static boolean validatePassword(String password) {
+        // Check if input has at least 8 characters
+        if (password.length() < 8) {
+            return false;
+        }
 
-    // Check if input contains a mix of lowercase and uppercase letters, digits, and special symbols
-    String pattern = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[a-zA-Z\\d@$!%*?&]+$";
-    return input.matches(pattern);
-}
+        // Check if input contains a mix of lowercase and uppercase letters, digits, and special symbols
+        String pattern = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[a-zA-Z\\d@$!%*?&]+$";
+        return password.matches(pattern);
+    }
 }
 

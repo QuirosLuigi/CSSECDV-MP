@@ -211,23 +211,22 @@ public class SQLite {
         }
     }
     
+    
     public void addUser(String username, String password) {
-        String sql = "INSERT INTO users(username,password) VALUES('" + username + "','" + password + "')";
-        
+        String sql = "INSERT INTO users(username, password) VALUES (?, ?)";
+
         try (Connection conn = DriverManager.getConnection(driverURL);
-            Statement stmt = conn.createStatement()){
-            stmt.execute(sql);
-            
-//      PREPARED STATEMENT EXAMPLE
-//      String sql = "INSERT INTO users(username,password) VALUES(?,?)";
-//      PreparedStatement pstmt = conn.prepareStatement(sql)) {
-//      pstmt.setString(1, username);
-//      pstmt.setString(2, password);
-//      pstmt.executeUpdate();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, username);
+            pstmt.setString(2, password);
+            pstmt.executeUpdate();
+
         } catch (Exception ex) {
-            System.out.print(ex);
+            System.out.println(ex);
         }
     }
+
     
     public void addSession(String username, int role) {
         String sql = "INSERT INTO session(username,role) VALUES('" + username + "','" + role + "')";
