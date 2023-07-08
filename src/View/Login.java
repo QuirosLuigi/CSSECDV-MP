@@ -7,8 +7,10 @@ import Model.User;
 import java.security.SecureRandom;
 import java.security.spec.KeySpec;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.Date;
 
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
@@ -124,47 +126,48 @@ public class Login extends javax.swing.JPanel {
         }
 
         //check if it belongs to registered users
-        ArrayList<User> users = sqlite.getUsers();
-        for(int ctr = 0; ctr < users.size() && !match; ctr++){
-            System.out.println("\n "+ users.get(ctr).getUsername() +" : Password2: " + password2 + " | GetPassword: " + users.get(ctr).getPassword());
-            if (username.equals(users.get(ctr).getUsername()) && password2.equals(users.get(ctr).getPassword())) {
-                match = true;
-                
-                //Erase user inputs before going to the next page
-                usernameFld.setText("");
-                passwordFld.setText("");
-                
-                int role = users.get(ctr).getRole();
-                
-                // Perform role-based navigation
-                switch (role) {
-                    case 1:
-                        // Disabled users
-                        JOptionPane.showMessageDialog(null, "This account is disabled!");
-                        break;
-                    case 2:
-                        JOptionPane.showMessageDialog(null,"Welcome " + username + "!\nRole: Client");
-                        frame.ClientNav();
-                        break;
-                    case 3:
-                        JOptionPane.showMessageDialog(null,"Welcome " + username + "!\nRole: Staff");
-                        frame.StaffNav();
-                        break;
-                    case 4:
-                        JOptionPane.showMessageDialog(null,"Welcome " + username + "!\nRole: Manager");
-                        frame.ManagerNav();
-                        break;
-                    case 5:
-                        JOptionPane.showMessageDialog(null,"Welcome " + username + "!\nRole: Administrator");
-                        frame.AdminNav();
-                        break;
-                    default:
-                        // Handle unexpected or unsupported role values
-                        System.out.println("An error has occured. Please try again later.");
-                        break;
-                }
+        int role = sqlite.validateUser(username, password2);
+        System.out.println("Username: " + username + " | password: " + password2 + " | role: " + role);
+        
+        if (role != -1) {
+            match = true;
+            //Add login user to the logs
+            //Log newly registered user
+            sqlite.addLogs("NOTICE", usernameFld.getText(), "User login successful", new Timestamp(new Date().getTime()).toString());
+            
+            //Erase user inputs before going to the next page
+            usernameFld.setText("");
+            passwordFld.setText("");
+            
+            // Perform role-based navigation
+            switch (role) {
+                case 1:
+                    // Disabled users
+                    JOptionPane.showMessageDialog(null, "This account is disabled!");
+                    break;
+                case 2:
+                    JOptionPane.showMessageDialog(null,"Welcome " + username + "!\nRole: Client");
+                    frame.ClientNav();
+                    break;
+                case 3:
+                    JOptionPane.showMessageDialog(null,"Welcome " + username + "!\nRole: Staff");
+                    frame.StaffNav();
+                    break;
+                case 4:
+                    JOptionPane.showMessageDialog(null,"Welcome " + username + "!\nRole: Manager");
+                    frame.ManagerNav();
+                    break;
+                case 5:
+                    JOptionPane.showMessageDialog(null,"Welcome " + username + "!\nRole: Administrator");
+                    frame.AdminNav();
+                    break;
+                default:
+                    // Handle unexpected or unsupported role values
+                    System.out.println("An error has occured. Please try again later.");
+                    break;
             }
         }
+        
         //If the user+pass did not match any in the database, INVALID + add to number of attempts
         if (!match) {
             attempts++;
@@ -173,13 +176,9 @@ public class Login extends javax.swing.JPanel {
                 startCooldown();
             }
             JOptionPane.showMessageDialog(null, "Invalid Username or Password!");
-        }
+        }    
     }
     
-    private int validateLogin(String user, String pass) {
-        
-    }
-
     private void startCooldown() {
         new Thread(() -> {
             try {

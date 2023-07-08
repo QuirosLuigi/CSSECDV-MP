@@ -294,7 +294,7 @@ public class SQLite {
     }
     
     public int validateUser(String username, String password) {
-        String sql = "SELECT * FROM users WHERE username = ? AND password = ?";
+        String sql = "SELECT role FROM users WHERE username = ? AND password = ?";
 
         try (Connection conn = DriverManager.getConnection(driverURL);
             PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -303,12 +303,15 @@ public class SQLite {
             stmt.setString(2, password);
 
             try (ResultSet rs = stmt.executeQuery()) {
-                return rs.getInt("role"); // Returns the role number if the user exists in the database
+                if (rs.next())
+                    return rs.getInt("role"); // Returns the role number if the user exists
+                else
+                    return -1; // User does not exist
             }
 
         } catch (SQLException e) {
             e.printStackTrace();
-            return 0;
+            return -1;
         }
     }
     

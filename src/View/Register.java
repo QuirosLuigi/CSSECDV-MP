@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Base64;
 import Controller.SQLite;
 import Model.User;
+import java.sql.Timestamp;
+import java.util.Date;
 
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
@@ -158,7 +160,11 @@ public class Register extends javax.swing.JPanel {
             
             //Hash password before entering the database (LUI)
             String encrypted = encryptPassword(passwordFld.getText());
-            System.out.println(encrypted);            
+            System.out.println(encrypted);  
+            
+            //Log newly registered user
+            sqlite.addLogs("NOTICE", usernameFld.getText(), "User creation successful", new Timestamp(new Date().getTime()).toString());
+            //Registered User
             frame.registerAction(usernameFld.getText(), encrypted, encrypted);
             frame.loginNav(); 
         }
