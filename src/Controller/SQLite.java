@@ -4,6 +4,7 @@ import Model.History;
 import Model.Logs;
 import Model.Product;
 import Model.User;
+import Model.Session;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
@@ -100,6 +101,23 @@ public class SQLite {
         }
     }
     
+    //This table stores the username and role number of the user currently logged in 
+    public void createSessionTable() {
+        String sql = "CREATE TABLE IF NOT EXISTS session (\n"
+            + " id INTEGER PRIMARY KEY AUTOINCREMENT,\n"
+            + " username TEXT NOT NULL UNIQUE,\n"
+            + " role INTEGER DEFAULT 2\n"
+            + ");";
+
+        try (Connection conn = DriverManager.getConnection(driverURL);
+            Statement stmt = conn.createStatement()) {
+            stmt.execute(sql);
+            System.out.println("Table session in database.db created.");
+        } catch (Exception ex) {
+            System.out.print(ex);
+        }
+    }
+    
     public void dropHistoryTable() {
         String sql = "DROP TABLE IF EXISTS history;";
 
@@ -143,6 +161,18 @@ public class SQLite {
             Statement stmt = conn.createStatement()) {
             stmt.execute(sql);
             System.out.println("Table users in database.db dropped.");
+        } catch (Exception ex) {
+            System.out.print(ex);
+        }
+    }
+    
+     public void dropSessionTable() {
+        String sql = "DROP TABLE IF EXISTS session;";
+
+        try (Connection conn = DriverManager.getConnection(driverURL);
+            Statement stmt = conn.createStatement()) {
+            stmt.execute(sql);
+            System.out.println("Table session in database.db dropped.");
         } catch (Exception ex) {
             System.out.print(ex);
         }
@@ -199,6 +229,17 @@ public class SQLite {
         }
     }
     
+    public void addSession(String username, int role) {
+        String sql = "INSERT INTO session(username,role) VALUES('" + username + "','" + role + "')";
+        
+        try (Connection conn = DriverManager.getConnection(driverURL);
+            Statement stmt = conn.createStatement()){
+            stmt.execute(sql);
+        } catch (Exception ex) {
+            System.out.print(ex);
+        }
+    }
+   
     
     public ArrayList<History> getHistory(){
         String sql = "SELECT id, username, name, stock, timestamp FROM history";
@@ -325,6 +366,37 @@ public class SQLite {
         } catch (Exception ex) {
             System.out.print(ex);
         }
+    }
+    
+    public void removeSession() {
+        String sql = "DELETE FROM session";
+
+        try (Connection conn = DriverManager.getConnection(driverURL);
+            Statement stmt = conn.createStatement()) {
+            int rowCount = stmt.executeUpdate(sql);
+            if (rowCount > 0) {
+            System.out.println("Session entry deleted successfully.");
+            } else {
+                System.out.println("No session entry found to delete.");
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            System.out.println("Error occurred while deleting session entry.");
+        }
+    }
+    
+    public Session getSession(){
+        String sql = "SELECT username, role FROM session LIMIT 1;";
+        Session session = null;
+        try (Connection conn = DriverManager.getConnection(driverURL);
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sql)){
+            session = new Session(rs.getString("username"),
+                                   rs.getInt("role"));
+        } catch (Exception ex) {
+            System.out.print(ex);
+        }
+        return session;
     }
     
     public Product getProduct(String name){

@@ -8,6 +8,7 @@ package View;
 import Controller.SQLite;
 import Model.History;
 import Model.Product;
+import Model.Session;
 import java.util.ArrayList;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
@@ -47,19 +48,59 @@ public class MgmtHistory extends javax.swing.JPanel {
         
 //      LOAD CONTENTS
         ArrayList<History> history = sqlite.getHistory();
-        for(int nCtr = 0; nCtr < history.size(); nCtr++){
-            
-            //get username
-            
-            Product product = sqlite.getProduct(history.get(nCtr).getName());
-            tableModel.addRow(new Object[]{
-                history.get(nCtr).getUsername(), 
-                history.get(nCtr).getName(), 
-                history.get(nCtr).getStock(), 
-                product.getPrice(), 
-                product.getPrice() * history.get(nCtr).getStock(), 
-                history.get(nCtr).getTimestamp()
-            }); 
+        
+        //Get current session: username and role
+        Session session = sqlite.getSession();
+        System.out.println("Opening History for role level " + session.getRole());
+        
+        switch (session.getRole()) {
+            case 5: //If the user is an admin, get ALL History
+                    for(int nCtr = 0; nCtr < history.size(); nCtr++){
+                        Product product = sqlite.getProduct(history.get(nCtr).getName());
+                        tableModel.addRow(new Object[]{
+                            history.get(nCtr).getUsername(), 
+                            history.get(nCtr).getName(), 
+                            history.get(nCtr).getStock(), 
+                            product.getPrice(), 
+                            product.getPrice() * history.get(nCtr).getStock(), 
+                            history.get(nCtr).getTimestamp()
+                        }); 
+                    }
+                    break;
+                    
+            case 4://If the user is a manager, get ALL History except admin
+                    for(int nCtr = 0; nCtr < history.size(); nCtr++){
+                        if (history.get(nCtr).getUsername().equals("admin")) {
+                        } 
+                        else {
+                           Product product = sqlite.getProduct(history.get(nCtr).getName());
+                            tableModel.addRow(new Object[]{
+                                history.get(nCtr).getUsername(), 
+                                history.get(nCtr).getName(), 
+                                history.get(nCtr).getStock(), 
+                                product.getPrice(), 
+                                product.getPrice() * history.get(nCtr).getStock(), 
+                                history.get(nCtr).getTimestamp()
+                            }); 
+                        }
+                    }
+                    break;
+                    
+            default://If the user is a staff or client, only get THEIR history
+                    for(int nCtr = 0; nCtr < history.size(); nCtr++){
+                        if (history.get(nCtr).getUsername().equals(session.getUsername())) {
+                            Product product = sqlite.getProduct(history.get(nCtr).getName());
+                            tableModel.addRow(new Object[]{
+                                history.get(nCtr).getUsername(), 
+                                history.get(nCtr).getName(), 
+                                history.get(nCtr).getStock(), 
+                                product.getPrice(), 
+                                product.getPrice() * history.get(nCtr).getStock(), 
+                                history.get(nCtr).getTimestamp()
+                            }); 
+                        } 
+                    }
+                    break;
         }
     }
     

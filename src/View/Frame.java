@@ -1,15 +1,20 @@
 package View;
 
 import Controller.Main;
+import Controller.SQLite;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Dimension;
+import javax.swing.JOptionPane;
 import javax.swing.WindowConstants;
 
 public class Frame extends javax.swing.JFrame {
+    
+    public SQLite sqlite;
 
     public Frame() {
         initComponents();
+        sqlite = new SQLite(); // Create an instance of the SQLite class
     }
 
     @SuppressWarnings("unchecked")
@@ -200,6 +205,9 @@ public class Frame extends javax.swing.JFrame {
     }//GEN-LAST:event_clientBtnActionPerformed
 
     private void logoutBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_logoutBtnActionPerformed
+        //Delete the logged in session from the session table
+        sqlite.removeSession();
+        System.out.println("User has been removed from the Session Table");
         frameView.show(Container, "loginPnl");
     }//GEN-LAST:event_logoutBtnActionPerformed
 

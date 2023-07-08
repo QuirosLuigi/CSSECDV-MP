@@ -135,6 +135,10 @@ public class Login extends javax.swing.JPanel {
             //Log newly registered user
             sqlite.addLogs("NOTICE", usernameFld.getText(), "User login successful", new Timestamp(new Date().getTime()).toString());
             
+            //Add to session table
+            sqlite.addSession(usernameFld.getText(), role);
+            System.out.println("Username: " + usernameFld.getText() + " Role: " + role + " has been added to the Session Table");
+            
             //Erase user inputs before going to the next page
             usernameFld.setText("");
             passwordFld.setText("");
@@ -171,6 +175,9 @@ public class Login extends javax.swing.JPanel {
         //If the user+pass did not match any in the database, INVALID + add to number of attempts
         if (!match) {
             attempts++;
+            //Log failed login attempt
+            sqlite.addLogs("NOTICE", usernameFld.getText(), "User login failed", new Timestamp(new Date().getTime()).toString());
+            
             if (attempts == 5) {
                 cooldown = true;
                 startCooldown();
