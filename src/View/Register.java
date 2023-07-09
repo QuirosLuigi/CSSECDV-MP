@@ -14,6 +14,7 @@ import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 import javax.swing.JOptionPane;
+import javax.swing.JPasswordField;
 
 public class Register extends javax.swing.JPanel {
 
@@ -31,10 +32,12 @@ public class Register extends javax.swing.JPanel {
     private void initComponents() {
 
         registerBtn = new javax.swing.JButton();
-        passwordFld = new javax.swing.JTextField();
+        passwordFld = new javax.swing.JPasswordField();
+        ((JPasswordField) passwordFld).setEchoChar('*');
         usernameFld = new javax.swing.JTextField();
         jLabel1 = new javax.swing.JLabel();
-        confpassFld = new javax.swing.JTextField();
+        confpassFld = new javax.swing.JPasswordField();
+        ((JPasswordField) passwordFld).setEchoChar('*');
         backBtn = new javax.swing.JButton();
         
 
@@ -140,7 +143,8 @@ public class Register extends javax.swing.JPanel {
         
         //Check validity of password
         //if pass
-        if (validatePassword(passwordFld.getText()))
+        String passwordstring = new String(((JPasswordField) passwordFld).getPassword());
+        if (validatePassword(passwordstring))
             check2 = true;
         else
             JOptionPane.showMessageDialog(null, "ERROR: Passwords must have "
@@ -149,7 +153,9 @@ public class Register extends javax.swing.JPanel {
         
         //Check if password matches confirm password
         //if pass
-        if (passwordFld.getText().equals(confpassFld.getText()))
+        String passwordstring1 = new String(((JPasswordField) passwordFld).getPassword());
+        String passwordstring2 = new String(((JPasswordField) confpassFld).getPassword());
+        if (passwordstring1.equals(passwordstring2))
             check3 = true;
         else
             JOptionPane.showMessageDialog(null, "ERROR: Confirm password and password does not match!");
@@ -159,7 +165,9 @@ public class Register extends javax.swing.JPanel {
         if (check1 && check2 && check3) {
             
             //Hash password before entering the database (LUI)
-            String encrypted = encryptPassword(passwordFld.getText());
+            char[] charpassword = ((JPasswordField) passwordFld).getPassword();
+            String Stringpassword = new String(charpassword);
+            String encrypted = encryptPassword(Stringpassword);
             System.out.println(encrypted);  
             
             //Log newly registered user
@@ -208,15 +216,15 @@ public class Register extends javax.swing.JPanel {
             return null;
         }
     }
-    public static boolean validatePassword(String password) {
+    public static boolean validatePassword(String cs) {
         // Check if input has at least 8 characters
-        if (password.length() < 8) {
+        if (cs.length() < 8) {
             return false;
         }
 
         // Check if input contains a mix of lowercase and uppercase letters, digits, and special symbols
         String pattern = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[a-zA-Z\\d@$!%*?&]+$";
-        return password.matches(pattern);
+        return cs.matches(pattern);
     }
 }
 
