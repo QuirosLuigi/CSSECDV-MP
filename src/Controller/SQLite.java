@@ -101,23 +101,6 @@ public class SQLite {
         }
     }
     
-    //This table stores the username and role number of the user currently logged in 
-    public void createSessionTable() {
-        String sql = "CREATE TABLE IF NOT EXISTS session (\n"
-            + " id INTEGER PRIMARY KEY AUTOINCREMENT,\n"
-            + " username TEXT NOT NULL UNIQUE,\n"
-            + " role INTEGER DEFAULT 2\n"
-            + ");";
-
-        try (Connection conn = DriverManager.getConnection(driverURL);
-            Statement stmt = conn.createStatement()) {
-            stmt.execute(sql);
-            System.out.println("Table session in database.db created.");
-        } catch (Exception ex) {
-            System.out.print(ex);
-        }
-    }
-    
     public void dropHistoryTable() {
         String sql = "DROP TABLE IF EXISTS history;";
 
@@ -161,18 +144,6 @@ public class SQLite {
             Statement stmt = conn.createStatement()) {
             stmt.execute(sql);
             System.out.println("Table users in database.db dropped.");
-        } catch (Exception ex) {
-            System.out.print(ex);
-        }
-    }
-    
-     public void dropSessionTable() {
-        String sql = "DROP TABLE IF EXISTS session;";
-
-        try (Connection conn = DriverManager.getConnection(driverURL);
-            Statement stmt = conn.createStatement()) {
-            stmt.execute(sql);
-            System.out.println("Table session in database.db dropped.");
         } catch (Exception ex) {
             System.out.print(ex);
         }
@@ -224,18 +195,6 @@ public class SQLite {
 
         } catch (Exception ex) {
             System.out.println(ex);
-        }
-    }
-
-    
-    public void addSession(String username, int role) {
-        String sql = "INSERT INTO session(username,role) VALUES('" + username + "','" + role + "')";
-        
-        try (Connection conn = DriverManager.getConnection(driverURL);
-            Statement stmt = conn.createStatement()){
-            stmt.execute(sql);
-        } catch (Exception ex) {
-            System.out.print(ex);
         }
     }
    
@@ -367,6 +326,65 @@ public class SQLite {
         }
     }
     
+    public Product getProduct(String name){
+        String sql = "SELECT name, stock, price FROM product WHERE name='" + name + "';";
+        Product product = null;
+        try (Connection conn = DriverManager.getConnection(driverURL);
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sql)){
+            product = new Product(rs.getString("name"),
+                                   rs.getInt("stock"),
+                                   rs.getFloat("price"));
+        } catch (Exception ex) {
+            System.out.print(ex);
+        }
+        return product;
+    }
+    
+    /**
+     * All session functions
+     */
+    
+    //This table stores the username and role number of the user currently logged in 
+    public void createSessionTable() {
+        String sql = "CREATE TABLE IF NOT EXISTS session (\n"
+            + " id INTEGER PRIMARY KEY AUTOINCREMENT,\n"
+            + " username TEXT NOT NULL UNIQUE,\n"
+            + " role INTEGER DEFAULT 2\n"
+            + ");";
+
+        try (Connection conn = DriverManager.getConnection(driverURL);
+            Statement stmt = conn.createStatement()) {
+            stmt.execute(sql);
+            System.out.println("Table session in database.db created.");
+        } catch (Exception ex) {
+            System.out.print(ex);
+        }
+    }
+    
+    public void dropSessionTable() {
+        String sql = "DROP TABLE IF EXISTS session;";
+
+        try (Connection conn = DriverManager.getConnection(driverURL);
+            Statement stmt = conn.createStatement()) {
+            stmt.execute(sql);
+            System.out.println("Table session in database.db dropped.");
+        } catch (Exception ex) {
+            System.out.print(ex);
+        }
+    }
+    
+    public void addSession(String username, int role) {
+        String sql = "INSERT INTO session(username,role) VALUES('" + username + "','" + role + "')";
+        
+        try (Connection conn = DriverManager.getConnection(driverURL);
+            Statement stmt = conn.createStatement()){
+            stmt.execute(sql);
+        } catch (Exception ex) {
+            System.out.print(ex);
+        }
+    }
+    
     public void removeSession() {
         String sql = "DELETE FROM session";
 
@@ -391,25 +409,10 @@ public class SQLite {
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(sql)){
             session = new Session(rs.getString("username"),
-                                   rs.getInt("role"));
+                                     rs.getInt("role"));
         } catch (Exception ex) {
             System.out.print(ex);
         }
         return session;
-    }
-    
-    public Product getProduct(String name){
-        String sql = "SELECT name, stock, price FROM product WHERE name='" + name + "';";
-        Product product = null;
-        try (Connection conn = DriverManager.getConnection(driverURL);
-            Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery(sql)){
-            product = new Product(rs.getString("name"),
-                                   rs.getInt("stock"),
-                                   rs.getFloat("price"));
-        } catch (Exception ex) {
-            System.out.print(ex);
-        }
-        return product;
     }
 }

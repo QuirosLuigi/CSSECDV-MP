@@ -283,8 +283,7 @@ public class Frame extends javax.swing.JFrame {
         managerBtn.setVisible(false);
         clientBtn.setVisible(true);
         frameView.show(Container, "homePnl");
-        contentView.show(Content, "clientHomePnl");
-        
+        contentView.show(Content, "clientHomePnl");   
     }
     
     public void loginNav(){

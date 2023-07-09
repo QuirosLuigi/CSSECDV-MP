@@ -117,9 +117,19 @@ public class Login extends javax.swing.JPanel {
         
         //Reject blank fields
         if (username.equals("")) {
-            JOptionPane.showMessageDialog(null, "ERROR: Username field is blank!");
+            if (cooldown) {
+                JOptionPane.showMessageDialog(null, "Cooldown in progress. Please try again after 30 seconds.");
+                return;
+            } else {
+                JOptionPane.showMessageDialog(null, "ERROR: Username field is blank!");
+            }
         } else if (passText.equals("")) {
-            JOptionPane.showMessageDialog(null, "ERROR: Password field is blank!");
+            if (cooldown) {
+                JOptionPane.showMessageDialog(null, "Cooldown in progress. Please try again after 30 seconds.");
+                return;
+            } else {
+                JOptionPane.showMessageDialog(null, "ERROR: Password field is blank!");
+            }
         }
         else {
             /* Compare Encrypted password on input vs Encrypted Password on Database */
@@ -156,19 +166,19 @@ public class Login extends javax.swing.JPanel {
                         // Disabled users
                         JOptionPane.showMessageDialog(null, "This account is disabled!");
                         break;
-                    case 2:
+                    case 2: //Clients
                         JOptionPane.showMessageDialog(null,"Welcome " + username + "!\nRole: Client");
                         frame.ClientNav();
                         break;
-                    case 3:
+                    case 3: //Staff
                         JOptionPane.showMessageDialog(null,"Welcome " + username + "!\nRole: Staff");
                         frame.StaffNav();
                         break;
-                    case 4:
+                    case 4: //Manager
                         JOptionPane.showMessageDialog(null,"Welcome " + username + "!\nRole: Manager");
                         frame.ManagerNav();
                         break;
-                    case 5:
+                    case 5: //Admin
                         JOptionPane.showMessageDialog(null,"Welcome " + username + "!\nRole: Administrator");
                         frame.AdminNav();
                         break;
@@ -178,6 +188,8 @@ public class Login extends javax.swing.JPanel {
                         break;
                 }
             }
+            else                
+                JOptionPane.showMessageDialog(null, "ERROR: Invalid Username or Password!");
         }
         //If the user+pass did not match any in the database, INVALID + add to number of attempts
         if (!match) {
@@ -189,7 +201,6 @@ public class Login extends javax.swing.JPanel {
                 cooldown = true;
                 startCooldown();
             }
-            JOptionPane.showMessageDialog(null, "ERROR: Invalid Username or Password!");
         }    
     }
     

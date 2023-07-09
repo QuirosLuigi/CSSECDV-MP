@@ -172,8 +172,15 @@ public class Register extends javax.swing.JPanel {
             
             //Log newly registered user
             sqlite.addLogs("NOTICE", usernameFld.getText(), "User creation successful", new Timestamp(new Date().getTime()).toString());
-            //Registered User
+            
+            //Register the User
             frame.registerAction(usernameFld.getText(), encrypted, encrypted);
+            JOptionPane.showMessageDialog(null, "Registration Successful!");
+            
+            //Delete field inputs
+            usernameFld.setText("");
+            passwordFld.setText("");
+            confpassFld.setText("");
             frame.loginNav(); 
         }
     }//GEN-LAST:event_registerBtnActionPerformed
