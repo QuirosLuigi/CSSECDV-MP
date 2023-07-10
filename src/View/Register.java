@@ -164,7 +164,7 @@ public class Register extends javax.swing.JPanel {
         //Add user to the database if it passes all checks
         if (check1 && check2 && check3) {
             
-            //Hash password before entering the database (LUI)
+            //Hash password before entering the database
             char[] charpassword = ((JPasswordField) passwordFld).getPassword();
             String Stringpassword = new String(charpassword);
             String encrypted = encryptPassword(Stringpassword);

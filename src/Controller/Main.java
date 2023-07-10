@@ -56,7 +56,7 @@ public class Main {
 //        sqlite.addProduct("Firewall", 3, 1000.0);
 //        sqlite.addProduct("Scanner", 10, 100.0);
 //
-//        // Add sample users
+//        // Add sample users - "qwerty1234" has been changed to its encrypted equivalent
 //        sqlite.addUser("admin", "jTO3rjmRpWixiomrtGJRAg==" , 5);
 //        sqlite.addUser("manager", "jTO3rjmRpWixiomrtGJRAg==", 4);
 //        sqlite.addUser("staff", "jTO3rjmRpWixiomrtGJRAg==", 3);

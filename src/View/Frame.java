@@ -207,7 +207,7 @@ public class Frame extends javax.swing.JFrame {
     private void logoutBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_logoutBtnActionPerformed
         //Delete the logged in session from the session table
         sqlite.removeSession();
-        System.out.println("User has been removed from the Session Table");
+        System.out.println(">> User session has ended.");
         frameView.show(Container, "loginPnl");
     }//GEN-LAST:event_logoutBtnActionPerformed
 

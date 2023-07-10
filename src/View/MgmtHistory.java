@@ -51,7 +51,6 @@ public class MgmtHistory extends javax.swing.JPanel {
         
         //Get current session: username and role
         Session session = sqlite.getSession();
-        System.out.println("Opening History for role level " + session.getRole());
         
         switch (session.getRole()) {
             case 5: //If the user is an admin, get ALL History
