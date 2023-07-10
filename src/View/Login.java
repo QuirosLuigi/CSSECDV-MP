@@ -11,6 +11,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Date;
+import java.util.Random;
 
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
@@ -150,12 +151,11 @@ public class Login extends javax.swing.JPanel {
             if (role != -1) {
                 
                 //CAPTCHA Pop-up message
-                String captchaCode = "XYZ123";
-
+                String captchaCode = createRandom(6);
                 JTextField captchaInput = new JTextField(10);
 
                 Object[] message = {
-                    "Enter the Captcha code:\n      XYZ123", captchaInput
+                    "Enter the Captcha code:\n      "+ captchaCode, captchaInput
                 };
                 
                 int captcha = JOptionPane.showConfirmDialog(null, message, "Captcha Login", JOptionPane.PLAIN_MESSAGE);
@@ -259,7 +259,7 @@ public class Login extends javax.swing.JPanel {
 
 
 
-
+    //Encrypts a given password
     public static String encryptPassword(String password) {
         try {
             // Generate a secret key from the password
@@ -277,5 +277,20 @@ public class Login extends javax.swing.JPanel {
             e.printStackTrace();
             return null;
         }
+    }
+    
+    //Generates a random 6-character string for captcha
+    public static String createRandom(int len) {
+        String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        StringBuilder stringBuilder = new StringBuilder();
+
+        Random random = new Random();
+        for (int i = 0; i < len; i++) {
+            int randomIndex = random.nextInt(characters.length());
+            char randomChar = characters.charAt(randomIndex);
+            stringBuilder.append(randomChar);
+        }
+
+        return stringBuilder.toString();
     }
 }
