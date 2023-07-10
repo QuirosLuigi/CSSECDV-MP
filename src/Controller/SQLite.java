@@ -348,9 +348,10 @@ public class SQLite {
     //This table stores the username and role number of the user currently logged in 
     public void createSessionTable() {
         String sql = "CREATE TABLE IF NOT EXISTS session (\n"
-            + " id INTEGER PRIMARY KEY AUTOINCREMENT,\n"
-            + " username TEXT NOT NULL UNIQUE,\n"
-            + " role INTEGER DEFAULT 2\n"
+            + "id INTEGER PRIMARY KEY AUTOINCREMENT, \n"
+            + "username TEXT NOT NULL, \n"
+            + "role INTEGER DEFAULT 2, \n"
+            + "UNIQUE(username) ON CONFLICT IGNORE"
             + ");";
 
         try (Connection conn = DriverManager.getConnection(driverURL);
@@ -391,19 +392,13 @@ public class SQLite {
         try (Connection conn = DriverManager.getConnection(driverURL);
             Statement stmt = conn.createStatement()) {
             int rowCount = stmt.executeUpdate(sql);
-            if (rowCount > 0) {
-            System.out.println("Session entry deleted successfully.");
-            } else {
-                System.out.println("No session entry found to delete.");
-            }
         } catch (Exception ex) {
             ex.printStackTrace();
-            System.out.println("Error occurred while deleting session entry.");
         }
     }
     
     public Session getSession(){
-        String sql = "SELECT username, role FROM session LIMIT 1;";
+        String sql = "SELECT username, role FROM session ORDER BY id DESC LIMIT 1;";
         Session session = null;
         try (Connection conn = DriverManager.getConnection(driverURL);
             Statement stmt = conn.createStatement();

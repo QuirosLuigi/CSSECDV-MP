@@ -158,14 +158,11 @@ public class Login extends javax.swing.JPanel {
                     "Enter the Captcha code:\n      XYZ123", captchaInput
                 };
                 
-                int captcha = JOptionPane.showOptionDialog(null, message, "Captcha Login",
-                JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null, null, null);
+                int captcha = JOptionPane.showConfirmDialog(null, message, "Captcha Login", JOptionPane.PLAIN_MESSAGE);
 
                 if (captcha == JOptionPane.OK_OPTION) {
-                    String userInput = captchaInput.getText();
-                    
                     //If input matches the captcha
-                    if (userInput.equals(captchaCode)) {
+                    if (captchaInput.getText().equals(captchaCode)) {
                         match = true;
                         //Add login user to the logs
                         sqlite.addLogs("NOTICE", usernameFld.getText(), "User login successful", new Timestamp(new Date().getTime()).toString());
