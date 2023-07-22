@@ -7,6 +7,7 @@ package View;
 
 import Controller.SQLite;
 import Model.Product;
+import Model.Session;
 import java.util.ArrayList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -49,6 +50,23 @@ public class MgmtProduct extends javax.swing.JPanel {
                 products.get(nCtr).getStock(), 
                 products.get(nCtr).getPrice()});
         }
+        
+        
+        //Get current session: username and role
+        Session session = sqlite.getSession();
+        
+        switch (session.getRole()) {
+            //if Client; purchase only
+            case 2: addBtn.setVisible(false);
+                    editBtn.setVisible(false);
+                    deleteBtn.setVisible(false);
+                    break;
+            //if Staff OR Manager; add, edit, delete
+            case 3:
+            case 4: purchaseBtn.setVisible(false);
+                    break;
+        }
+        
     }
     
     public void designer(JTextField component, String text){
@@ -174,7 +192,10 @@ public class MgmtProduct extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void purchaseBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_purchaseBtnActionPerformed
+        System.out.println("Purchase Button pressed");
+        
         if(table.getSelectedRow() >= 0){
+            System.out.println("table >= 0");
             JTextField stockFld = new JTextField("0");
             designer(stockFld, "PRODUCT STOCK");
 

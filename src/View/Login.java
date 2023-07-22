@@ -26,7 +26,6 @@ public class Login extends javax.swing.JPanel {
 
     public Frame frame;
     public SQLite sqlite;
-    private int attempts;
     private ArrayList<String> userList;
     private ArrayList<Integer> attemptList;
     
@@ -35,6 +34,7 @@ public class Login extends javax.swing.JPanel {
     public Login() {
         initComponents();
         sqlite = new SQLite(); // Create an instance of the SQLite class
+        sqlite.removeSession();
         //attempts = 0;
         userList = new ArrayList<>(); 
         attemptList = new ArrayList<>();
@@ -141,6 +141,9 @@ public class Login extends javax.swing.JPanel {
             }
             //if username-password combination exists
             else if (role != -1) {
+                /* Turn off CAPTCHA
+
+
                 //CAPTCHA Pop-up message
                 String captchaCode = createRandom(6);
                 JTextField captchaInput = new JTextField(10);
@@ -154,6 +157,8 @@ public class Login extends javax.swing.JPanel {
                 if (captcha == JOptionPane.OK_OPTION) {
                     //If input matches the captcha
                     if (captchaInput.getText().equals(captchaCode)) {
+
+                */
                         match = true;
                         //Add login user to the logs
                         sqlite.addLogs("NOTICE", usernameFld.getText(), "User login successful", new Timestamp(new Date().getTime()).toString());
@@ -191,13 +196,18 @@ public class Login extends javax.swing.JPanel {
                                 JOptionPane.showMessageDialog(null,"An error has occured. Please try again later.");
                                 break;
                         }
+                    
+                /* TURN OFF CAPTCHA
                     } else {
                         //Entered code does not match captcha code
                         JOptionPane.showMessageDialog(null, "Entered code does not match. Login failed.");
-                    }
+                    } 
                 } else {
                     JOptionPane.showMessageDialog(null, "Entered code does not match. Login failed.");
-                }
+                }*/
+                
+                
+                
             } 
             else {
                 JOptionPane.showMessageDialog(null, "ERROR: Invalid Username or Password!");
