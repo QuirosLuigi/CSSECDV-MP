@@ -18,6 +18,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
+import java.awt.CardLayout;
 
 /**
  *
@@ -27,8 +28,12 @@ public class MgmtProduct extends javax.swing.JPanel {
 
     public SQLite sqlite;
     public DefaultTableModel tableModel;
+
+
+      
     
     public MgmtProduct(SQLite sqlite) {
+        
         initComponents();
         this.sqlite = sqlite;
         tableModel = (DefaultTableModel)table.getModel();
@@ -250,6 +255,16 @@ public class MgmtProduct extends javax.swing.JPanel {
 
         } catch (SQLException e) {
             System.err.println("Error adding product: " + e.getMessage());
+        }
+        for(int nCtr = tableModel.getRowCount(); nCtr > 0; nCtr--){
+            tableModel.removeRow(0);
+        }
+        ArrayList<Product> products = sqlite.getProduct();
+        for(int nCtr = 0; nCtr < products.size(); nCtr++){
+            tableModel.addRow(new Object[]{
+                products.get(nCtr).getName(), 
+                products.get(nCtr).getStock(), 
+                products.get(nCtr).getPrice()});
         }
     }//GEN-LAST:event_addBtnActionPerformed
 

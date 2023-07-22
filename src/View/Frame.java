@@ -298,6 +298,7 @@ public class Frame extends javax.swing.JFrame {
         main.sqlite.addUser(username, password);
     }
 
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel Container;
     private javax.swing.JPanel Content;
