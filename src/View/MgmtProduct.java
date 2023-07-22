@@ -8,6 +8,11 @@ package View;
 import Controller.SQLite;
 import Model.Product;
 import Model.Session;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -230,6 +235,21 @@ public class MgmtProduct extends javax.swing.JPanel {
             System.out.println(nameFld.getText());
             System.out.println(stockFld.getText());
             System.out.println(priceFld.getText());
+        }
+                String sql = "INSERT INTO product (name, stock, price) VALUES (?, ?, ?)";
+
+        try (Connection conn = DriverManager.getConnection("jdbc:sqlite:database.db");
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, nameFld.getText());
+            pstmt.setInt(2, Integer.parseInt(stockFld.getText()));
+            pstmt.setDouble(3, Float.parseFloat(priceFld.getText()));
+
+            pstmt.executeUpdate();
+            System.out.println("New product added successfully.");
+
+        } catch (SQLException e) {
+            System.err.println("Error adding product: " + e.getMessage());
         }
     }//GEN-LAST:event_addBtnActionPerformed
 
