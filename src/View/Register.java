@@ -168,7 +168,6 @@ public class Register extends javax.swing.JPanel {
             char[] charpassword = ((JPasswordField) passwordFld).getPassword();
             String Stringpassword = new String(charpassword);
             String encrypted = encryptPassword(Stringpassword);
-            System.out.println(encrypted);  
             
             //Log newly registered user
             sqlite.addLogs("NOTICE", usernameFld.getText(), "User creation successful", new Timestamp(new Date().getTime()).toString());

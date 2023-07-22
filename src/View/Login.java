@@ -27,15 +27,17 @@ public class Login extends javax.swing.JPanel {
     public Frame frame;
     public SQLite sqlite;
     private int attempts;
-    private boolean cooldown;
+    private ArrayList<String> userList;
+    private ArrayList<Integer> attemptList;
     
 
     
     public Login() {
         initComponents();
         sqlite = new SQLite(); // Create an instance of the SQLite class
-        attempts = 0;
-        cooldown = false;
+        //attempts = 0;
+        userList = new ArrayList<>(); 
+        attemptList = new ArrayList<>();
     }
 
     @SuppressWarnings("unchecked")
@@ -121,35 +123,24 @@ public class Login extends javax.swing.JPanel {
         
         //Reject blank fields
         if (username.equals("")) {
-            if (cooldown) {
-                JOptionPane.showMessageDialog(null, "Cooldown in progress. Please try again after 30 seconds.");
-                return;
-            } else {
                 JOptionPane.showMessageDialog(null, "ERROR: Username field is blank!");
-            }
         } else if (passText.equals("")) {
-            if (cooldown) {
-                JOptionPane.showMessageDialog(null, "Cooldown in progress. Please try again after 30 seconds.");
-                return;
-            } else {
                 JOptionPane.showMessageDialog(null, "ERROR: Password field is blank!");
-            }
         }
         else {
             /* Compare Encrypted password on input vs Encrypted Password on Database */
             String password2 = encryptPassword(passText);
-            
-            if (cooldown) {
-                JOptionPane.showMessageDialog(null, "Cooldown in progress. Please try again after 30 seconds.");
-                return;
-            }
-
+  
             //check if it belongs to registered users
             int role = sqlite.validateUser(username, password2);
             
-
-            if (role != -1) {
-                
+            //if user is disabled
+            if (role == 1) {
+                // Disabled users
+                JOptionPane.showMessageDialog(null, "This account is disabled! Please contact our admin");
+            }
+            //if username-password combination exists
+            else if (role != -1) {
                 //CAPTCHA Pop-up message
                 String captchaCode = createRandom(6);
                 JTextField captchaInput = new JTextField(10);
@@ -179,10 +170,6 @@ public class Login extends javax.swing.JPanel {
                         
                         // Perform role-based navigation
                         switch (role) {
-                            case 1:
-                                // Disabled users
-                                JOptionPane.showMessageDialog(null, "This account is disabled!");
-                                break;
                             case 2: //Clients
                                 JOptionPane.showMessageDialog(null,"Welcome " + username + "!\nRole: Client");
                                 frame.ClientNav();
@@ -211,34 +198,43 @@ public class Login extends javax.swing.JPanel {
                 } else {
                     JOptionPane.showMessageDialog(null, "Entered code does not match. Login failed.");
                 }
-            } else {
+            } 
+            else {
                 JOptionPane.showMessageDialog(null, "ERROR: Invalid Username or Password!");
                 System.out.println("User " + username + " login attempt failed");
             }
         }
         //If the user+pass did not match any in the database, INVALID + add to number of attempts
         if (!match) {
-            attempts++;
-            //Log failed login attempt
-            sqlite.addLogs("NOTICE", usernameFld.getText(), "User login failed", new Timestamp(new Date().getTime()).toString());
+            //check if username exists in database
+            boolean userExists = sqlite.validateUser(username);
             
-            if (attempts == 5) {
-                cooldown = true;
-                startCooldown();
+            //check is username exists in userList
+            if (userExists) {
+                //check if username exists in userList
+               int index = userList.indexOf(username);
+                
+                if (index != -1) {
+                    //if not first attempt, call Arraylist users, find its index, and use that index on attempts and add +1
+                    int num = attemptList.get(index)+1;
+                    attemptList.set(index, num);
+                    System.out.println(username + " | attempt: " + attemptList.get(index));
+
+                    //if user already has 5 attempts
+                    if (attemptList.get(index) == 5) {
+                        //Change role to '1' - DISABLED
+                        sqlite.changeUserRole(username, 1);
+                        // Disabled users
+                        JOptionPane.showMessageDialog(null, "This account is disabled! Please contact our admin");
+                    }
+                } else {
+                    //if first attempt, add to Arraylist users and attempts
+                    userList.add(username);
+                    attemptList.add(1);
+                    System.out.println("Added user to userList");
+                }
             }
         }    
-    }
-    
-    private void startCooldown() {
-        new Thread(() -> {
-            try {
-                Thread.sleep(30 * 1000); // 30 second cooldown
-            } catch (InterruptedException e) {
-                System.out.println("Interrupted cooldown");
-            }
-            attempts = 0;
-            cooldown = false;
-        }).start();
     }
                                         
 

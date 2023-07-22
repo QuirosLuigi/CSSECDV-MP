@@ -314,6 +314,40 @@ public class SQLite {
         }
     }
     
+    public boolean validateUser(String username) {
+        String sql = "SELECT role FROM users WHERE username = ?";
+
+        try (Connection conn = DriverManager.getConnection(driverURL);
+            PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, username);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                return rs.next(); // Returns true if the user exists
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+    
+    public void changeUserRole(String username, int role) {
+        String sql = "UPDATE users SET role = ? WHERE username = ?";
+        
+        try (Connection conn = DriverManager.getConnection(driverURL);
+            PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, role);
+            pstmt.setString(2, username);
+
+            pstmt.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    
     public void removeUser(String username) {
         String sql = "DELETE FROM users WHERE username='" + username + "';";
 
