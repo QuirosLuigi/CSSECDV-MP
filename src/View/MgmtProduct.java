@@ -12,6 +12,7 @@ import Model.Session;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import javax.swing.JOptionPane;
@@ -282,24 +283,129 @@ public class MgmtProduct extends javax.swing.JPanel {
                 "Edit Product Details:", nameFld, stockFld, priceFld
             };
 
-            int result = JOptionPane.showConfirmDialog(null, message, "EDIT PRODUCT", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null);
+            ResultSet resultSet = null;
+            String sql0 = "SELECT id FROM product WHERE name = ?";
+            int productid=99;
+            try (Connection conn = DriverManager.getConnection("jdbc:sqlite:database.db"))
+             {
+                PreparedStatement pstmt0 = conn.prepareStatement(sql0);
+                pstmt0 = conn.prepareStatement(sql0);
+                pstmt0.setString(1, nameFld.getText()); // Set the product name as the parameter value
+                resultSet = pstmt0.executeQuery();
+                if (resultSet.next()) {
+                productid = resultSet.getInt("id");
+                System.out.println(productid);
+            }
+            else{
+                System.out.println("alaws");
+            }
 
+                }
+            catch (SQLException e) {
+                System.err.println("Error adding product: " + e.getMessage());
+            }
+
+            int result = JOptionPane.showConfirmDialog(null, message, "EDIT PRODUCT", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null);
             if (result == JOptionPane.OK_OPTION) {
                 System.out.println(nameFld.getText());
                 System.out.println(stockFld.getText());
                 System.out.println(priceFld.getText());
+
+            try(Connection conn = DriverManager.getConnection("jdbc:sqlite:database.db")) {
+
+                String updateQuery = "UPDATE product SET name = ?, stock = ?, price = ? WHERE id = ?";
+                PreparedStatement preparedStatement = null;
+                // Step 4: Execute the SQL script
+                preparedStatement = conn.prepareStatement(updateQuery);
+                preparedStatement.setString(1, nameFld.getText());
+                preparedStatement.setString(2, stockFld.getText());
+                preparedStatement.setString(3, priceFld.getText());
+                // Set the appropriate ID value to identify the row you want to update
+                preparedStatement.setInt(4, productid);
+    
+                int rowsAffected = preparedStatement.executeUpdate();
+                System.out.println(rowsAffected + " row(s) updated successfully.");
+            } catch (SQLException e) {
+                e.printStackTrace();
             }
-        }
+            } 
+      
+            for(int nCtr = tableModel.getRowCount(); nCtr > 0; nCtr--){
+            tableModel.removeRow(0);
+            }
+            ArrayList<Product> products = sqlite.getProduct();
+            for(int nCtr = 0; nCtr < products.size(); nCtr++){
+                tableModel.addRow(new Object[]{
+                    products.get(nCtr).getName(), 
+                    products.get(nCtr).getStock(), 
+                    products.get(nCtr).getPrice()});
+            }
+            }
     }//GEN-LAST:event_editBtnActionPerformed
 
     private void deleteBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteBtnActionPerformed
         if(table.getSelectedRow() >= 0){
+            int productid=99;
             int result = JOptionPane.showConfirmDialog(null, "Are you sure you want to delete " + tableModel.getValueAt(table.getSelectedRow(), 0) + "?", "DELETE PRODUCT", JOptionPane.YES_NO_OPTION);
             
             if (result == JOptionPane.YES_OPTION) {
                 System.out.println(tableModel.getValueAt(table.getSelectedRow(), 0));
+
+            ResultSet resultSet = null;
+            String sql0 = "SELECT id FROM product WHERE name = ?";
+            
+            try (Connection conn = DriverManager.getConnection("jdbc:sqlite:database.db"))
+             {
+                PreparedStatement pstmt0 = conn.prepareStatement(sql0);
+                pstmt0 = conn.prepareStatement(sql0);
+                pstmt0.setString(1, tableModel.getValueAt(table.getSelectedRow(),0).toString()); // Set the product name as the parameter value
+                resultSet = pstmt0.executeQuery();
+                if (resultSet.next()) {
+                productid = resultSet.getInt("id");
+                System.out.println(productid);
+                
             }
+
+            }
+            catch (SQLException e) {
+                System.err.println("Error adding product: " + e.getMessage());
+            }
+
+            try(Connection conn = DriverManager.getConnection("jdbc:sqlite:database.db"))
+            {    
+                String deleteQuery = "DELETE FROM product WHERE id = ?";
+    
+                PreparedStatement preparedStatement = null;
+                preparedStatement = conn.prepareStatement(deleteQuery);
+                preparedStatement.setInt(1, productid); // Set the product ID as the parameter value
+    
+                int rowsAffected = preparedStatement.executeUpdate();
+                if (rowsAffected > 0) {
+                    System.out.println("Product with ID " + productid + " deleted successfully.");
+                } else {
+                    System.out.println("Product with ID " + productid + " not found.");
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            
+            for(int nCtr = tableModel.getRowCount(); nCtr > 0; nCtr--){
+            tableModel.removeRow(0);
+            }
+            ArrayList<Product> products = sqlite.getProduct();
+            for(int nCtr = 0; nCtr < products.size(); nCtr++){
+                tableModel.addRow(new Object[]{
+                    products.get(nCtr).getName(), 
+                    products.get(nCtr).getStock(), 
+                    products.get(nCtr).getPrice()});
+            }
+
+
         }
+    }
+
+
+
     }//GEN-LAST:event_deleteBtnActionPerformed
 
 
