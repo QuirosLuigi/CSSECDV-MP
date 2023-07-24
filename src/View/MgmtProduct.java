@@ -20,6 +20,8 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 import java.awt.CardLayout;
+import java.sql.Timestamp;
+import java.util.Date;
 
 /**
  *
@@ -206,7 +208,7 @@ public class MgmtProduct extends javax.swing.JPanel {
         System.out.println("Purchase Button pressed");
         
         if(table.getSelectedRow() >= 0){
-            System.out.println("table >= 0");
+           
             JTextField stockFld = new JTextField("0");
             designer(stockFld, "PRODUCT STOCK");
 
@@ -217,7 +219,44 @@ public class MgmtProduct extends javax.swing.JPanel {
             int result = JOptionPane.showConfirmDialog(null, message, "PURCHASE PRODUCT", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null);
 
             if (result == JOptionPane.OK_OPTION) {
-                System.out.println(stockFld.getText());
+                
+                //Get current session: username and role
+                Session session = sqlite.getSession();
+                
+                //parse quantity to integer
+                try {
+                    int quantity = Integer.parseInt(stockFld.getText());
+                    int currentstock = Integer.parseInt(tableModel.getValueAt(table.getSelectedRow(), 1).toString());
+                    
+                    //check if requested number is larger than the stock
+                    //if not, add to History
+                    
+                    System.out.println ("Qty: " + quantity + " | Current Stock: " + currentstock);
+                    
+                    if (quantity <= currentstock && quantity > 0) {
+                        System.out.println(quantity + " > " + currentstock);
+                        
+                        //Add purchase to History database
+                        String currenttimestamp = new Timestamp(new Date().getTime()).toString();
+                        sqlite.addHistory(session.getUsername(), tableModel.getValueAt(table.getSelectedRow(), 0).toString(), quantity, currenttimestamp);
+                        System.out.println("Added purchase: " + session.getUsername() + " | " + tableModel.getValueAt(table.getSelectedRow(), 0).toString() + " | " + quantity + " | " + currenttimestamp);
+                        
+                        //Reduce stock number / update Product database
+                        currentstock = currentstock - quantity;
+                        sqlite.changeProduct(tableModel.getValueAt(table.getSelectedRow(), 0).toString(), currentstock);
+                        System.out.println("Reduced stock to " + currentstock);
+                        
+                    } else {
+                        System.out.println("Error: Invalid quantity given");
+                    }
+                    
+                //if yes, cancel Purchase                    
+                } catch (NumberFormatException e) {
+                    System.out.println("Error: The string cannot be converted to an integer. Purchase CANCELLED");
+                }
+                
+                //Refresh Product page
+                init();
             }
         }
     }//GEN-LAST:event_purchaseBtnActionPerformed
@@ -260,6 +299,7 @@ public class MgmtProduct extends javax.swing.JPanel {
         for(int nCtr = tableModel.getRowCount(); nCtr > 0; nCtr--){
             tableModel.removeRow(0);
         }
+        
         ArrayList<Product> products = sqlite.getProduct();
         for(int nCtr = 0; nCtr < products.size(); nCtr++){
             tableModel.addRow(new Object[]{
