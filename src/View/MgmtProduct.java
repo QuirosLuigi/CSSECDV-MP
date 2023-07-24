@@ -359,7 +359,7 @@ public class MgmtProduct extends javax.swing.JPanel {
 
                 }
             catch (SQLException e) {
-                System.err.println("Error adding product: " + e.getMessage());
+                System.err.println("Error editing product: " + e.getMessage());
             }
 
             int result = JOptionPane.showConfirmDialog(null, message, "EDIT PRODUCT", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null);
@@ -367,6 +367,20 @@ public class MgmtProduct extends javax.swing.JPanel {
                 System.out.println(nameFld.getText());
                 System.out.println(stockFld.getText());
                 System.out.println(priceFld.getText());
+
+                if (!stockFld.getText().matches("\\d+")) {
+                    JOptionPane.showMessageDialog(null, "Please enter a valid integer value for stock.", "Invalid Input", JOptionPane.ERROR_MESSAGE);
+                    return; // Exit the method, so the product won't be added
+                }
+            
+                // Input validation for price (accepts float values)
+                Pattern pricePattern = Pattern.compile("^\\d+(\\.\\d{1,2})?$");
+                Matcher priceMatcher = pricePattern.matcher(priceFld.getText());
+                if (!priceMatcher.matches()) {
+                    JOptionPane.showMessageDialog(null, "Please enter a valid floating-point value for price.", "Invalid Input", JOptionPane.ERROR_MESSAGE);
+                    return; // Exit the method, so the product won't be added
+                }
+
 
             try(Connection conn = DriverManager.getConnection("jdbc:sqlite:database.db")) {
 
