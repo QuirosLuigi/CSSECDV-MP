@@ -20,6 +20,8 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 import java.awt.CardLayout;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  *
@@ -241,7 +243,20 @@ public class MgmtProduct extends javax.swing.JPanel {
             System.out.println(nameFld.getText());
             System.out.println(stockFld.getText());
             System.out.println(priceFld.getText());
-        }
+
+            if (!stockFld.getText().matches("\\d+")) {
+            JOptionPane.showMessageDialog(null, "Please enter a valid integer value for stock.", "Invalid Input", JOptionPane.ERROR_MESSAGE);
+            return; // Exit the method, so the product won't be added
+            }
+        
+            // Input validation for price (accepts float values)
+            Pattern pricePattern = Pattern.compile("^\\d+(\\.\\d{1,2})?$");
+            Matcher priceMatcher = pricePattern.matcher(priceFld.getText());
+            if (!priceMatcher.matches()) {
+                JOptionPane.showMessageDialog(null, "Please enter a valid floating-point value for price.", "Invalid Input", JOptionPane.ERROR_MESSAGE);
+                return; // Exit the method, so the product won't be added
+            }
+
                 String sql = "INSERT INTO product (name, stock, price) VALUES (?, ?, ?)";
 
         try (Connection conn = DriverManager.getConnection("jdbc:sqlite:database.db");
@@ -267,6 +282,7 @@ public class MgmtProduct extends javax.swing.JPanel {
                 products.get(nCtr).getStock(), 
                 products.get(nCtr).getPrice()});
         }
+    }
     }//GEN-LAST:event_addBtnActionPerformed
 
     private void editBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editBtnActionPerformed
