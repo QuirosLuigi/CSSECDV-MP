@@ -22,6 +22,8 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.CardLayout;
 import java.sql.Timestamp;
 import java.util.Date;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  *
@@ -281,32 +283,47 @@ public class MgmtProduct extends javax.swing.JPanel {
             System.out.println(nameFld.getText());
             System.out.println(stockFld.getText());
             System.out.println(priceFld.getText());
-        }
+
+            if (!stockFld.getText().matches("\\d+")) {
+                JOptionPane.showMessageDialog(null, "Please enter a valid integer value for stock.", "Invalid Input", JOptionPane.ERROR_MESSAGE);
+                return; // Exit the method, so the product won't be added
+            }
+        
+            // Input validation for price (accepts float values)
+            Pattern pricePattern = Pattern.compile("^\\d+(\\.\\d{1,2})?$");
+            Matcher priceMatcher = pricePattern.matcher(priceFld.getText());
+            if (!priceMatcher.matches()) {
+                JOptionPane.showMessageDialog(null, "Please enter a valid floating-point value for price.", "Invalid Input", JOptionPane.ERROR_MESSAGE);
+                return; // Exit the method, so the product won't be added
+            }
+
                 String sql = "INSERT INTO product (name, stock, price) VALUES (?, ?, ?)";
 
-        try (Connection conn = DriverManager.getConnection("jdbc:sqlite:database.db");
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            try (Connection conn = DriverManager.getConnection("jdbc:sqlite:database.db");
+                 PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-            pstmt.setString(1, nameFld.getText());
-            pstmt.setInt(2, Integer.parseInt(stockFld.getText()));
-            pstmt.setDouble(3, Float.parseFloat(priceFld.getText()));
+                pstmt.setString(1, nameFld.getText());
+                pstmt.setInt(2, Integer.parseInt(stockFld.getText()));
+                pstmt.setDouble(3, Float.parseFloat(priceFld.getText()));
 
-            pstmt.executeUpdate();
-            System.out.println("New product added successfully.");
+                pstmt.executeUpdate();
+                System.out.println("New product added successfully.");
 
-        } catch (SQLException e) {
-            System.err.println("Error adding product: " + e.getMessage());
-        }
-        for(int nCtr = tableModel.getRowCount(); nCtr > 0; nCtr--){
-            tableModel.removeRow(0);
-        }
+            } catch (SQLException e) {
+                System.err.println("Error adding product: " + e.getMessage());
+            }
         
-        ArrayList<Product> products = sqlite.getProduct();
-        for(int nCtr = 0; nCtr < products.size(); nCtr++){
-            tableModel.addRow(new Object[]{
-                products.get(nCtr).getName(), 
-                products.get(nCtr).getStock(), 
-                products.get(nCtr).getPrice()});
+            for(int nCtr = tableModel.getRowCount(); nCtr > 0; nCtr--){
+                tableModel.removeRow(0);
+            }
+
+            ArrayList<Product> products = sqlite.getProduct();
+            for(int nCtr = 0; nCtr < products.size(); nCtr++){
+                tableModel.addRow(new Object[]{
+                    products.get(nCtr).getName(), 
+                    products.get(nCtr).getStock(), 
+                    products.get(nCtr).getPrice()});
+            }
         }
     }//GEN-LAST:event_addBtnActionPerformed
 
@@ -331,21 +348,19 @@ public class MgmtProduct extends javax.swing.JPanel {
              {
                 PreparedStatement pstmt0 = conn.prepareStatement(sql0);
                 pstmt0 = conn.prepareStatement(sql0);
-                
                 pstmt0.setString(1, nameFld.getText()); // Set the product name as the parameter value
                 resultSet = pstmt0.executeQuery();
-                
                 if (resultSet.next()) {
-                    productid = resultSet.getInt("id");
-                    System.out.println(productid);
-                }
-                else{
-                    System.out.println("alaws");
-                }
-
+                productid = resultSet.getInt("id");
+                System.out.println(productid);
             }
+            else{
+                System.out.println("alaws");
+            }
+
+                }
             catch (SQLException e) {
-                System.err.println("Error adding product: " + e.getMessage());
+                System.err.println("Error editing product: " + e.getMessage());
             }
 
             int result = JOptionPane.showConfirmDialog(null, message, "EDIT PRODUCT", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null);
@@ -353,6 +368,20 @@ public class MgmtProduct extends javax.swing.JPanel {
                 System.out.println(nameFld.getText());
                 System.out.println(stockFld.getText());
                 System.out.println(priceFld.getText());
+
+                if (!stockFld.getText().matches("\\d+")) {
+                    JOptionPane.showMessageDialog(null, "Please enter a valid integer value for stock.", "Invalid Input", JOptionPane.ERROR_MESSAGE);
+                    return; // Exit the method, so the product won't be added
+                }
+            
+                // Input validation for price (accepts float values)
+                Pattern pricePattern = Pattern.compile("^\\d+(\\.\\d{1,2})?$");
+                Matcher priceMatcher = pricePattern.matcher(priceFld.getText());
+                if (!priceMatcher.matches()) {
+                    JOptionPane.showMessageDialog(null, "Please enter a valid floating-point value for price.", "Invalid Input", JOptionPane.ERROR_MESSAGE);
+                    return; // Exit the method, so the product won't be added
+                }
+
 
                 try(Connection conn = DriverManager.getConnection("jdbc:sqlite:database.db")) {
 
@@ -374,7 +403,7 @@ public class MgmtProduct extends javax.swing.JPanel {
             } 
       
             for(int nCtr = tableModel.getRowCount(); nCtr > 0; nCtr--){
-            tableModel.removeRow(0);
+                tableModel.removeRow(0);
             }
             ArrayList<Product> products = sqlite.getProduct();
             for(int nCtr = 0; nCtr < products.size(); nCtr++){
@@ -383,7 +412,7 @@ public class MgmtProduct extends javax.swing.JPanel {
                     products.get(nCtr).getStock(), 
                     products.get(nCtr).getPrice()});
             }
-            }
+        }
     }//GEN-LAST:event_editBtnActionPerformed
 
     private void deleteBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteBtnActionPerformed
@@ -394,58 +423,52 @@ public class MgmtProduct extends javax.swing.JPanel {
             if (result == JOptionPane.YES_OPTION) {
                 System.out.println(tableModel.getValueAt(table.getSelectedRow(), 0));
 
-            ResultSet resultSet = null;
-            String sql0 = "SELECT id FROM product WHERE name = ?";
-            
-            try (Connection conn = DriverManager.getConnection("jdbc:sqlite:database.db"))
-             {
-                PreparedStatement pstmt0 = conn.prepareStatement(sql0);
-                pstmt0 = conn.prepareStatement(sql0);
-                pstmt0.setString(1, tableModel.getValueAt(table.getSelectedRow(),0).toString()); // Set the product name as the parameter value
-                resultSet = pstmt0.executeQuery();
-                if (resultSet.next()) {
-                productid = resultSet.getInt("id");
-                System.out.println(productid);
-                
-            }
+                ResultSet resultSet = null;
+                String sql0 = "SELECT id FROM product WHERE name = ?";
 
-            }
-            catch (SQLException e) {
-                System.err.println("Error adding product: " + e.getMessage());
-            }
-
-            try(Connection conn = DriverManager.getConnection("jdbc:sqlite:database.db"))
-            {    
-                String deleteQuery = "DELETE FROM product WHERE id = ?";
-    
-                PreparedStatement preparedStatement = null;
-                preparedStatement = conn.prepareStatement(deleteQuery);
-                preparedStatement.setInt(1, productid); // Set the product ID as the parameter value
-    
-                int rowsAffected = preparedStatement.executeUpdate();
-                if (rowsAffected > 0) {
-                    System.out.println("Product with ID " + productid + " deleted successfully.");
-                } else {
-                    System.out.println("Product with ID " + productid + " not found.");
+                try (Connection conn = DriverManager.getConnection("jdbc:sqlite:database.db")) {
+                    PreparedStatement pstmt0 = conn.prepareStatement(sql0);
+                    pstmt0 = conn.prepareStatement(sql0);
+                    pstmt0.setString(1, tableModel.getValueAt(table.getSelectedRow(),0).toString()); // Set the product name as the parameter value
+                    resultSet = pstmt0.executeQuery();
+                    if (resultSet.next()) {
+                        productid = resultSet.getInt("id");
+                        System.out.println(productid);
+                    }
+                } catch (SQLException e) {
+                    System.err.println("Error adding product: " + e.getMessage());
                 }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-            
-            for(int nCtr = tableModel.getRowCount(); nCtr > 0; nCtr--){
-            tableModel.removeRow(0);
-            }
-            ArrayList<Product> products = sqlite.getProduct();
-            for(int nCtr = 0; nCtr < products.size(); nCtr++){
-                tableModel.addRow(new Object[]{
-                    products.get(nCtr).getName(), 
-                    products.get(nCtr).getStock(), 
-                    products.get(nCtr).getPrice()});
-            }
 
+                try(Connection conn = DriverManager.getConnection("jdbc:sqlite:database.db")) {    
+                    String deleteQuery = "DELETE FROM product WHERE id = ?";
 
+                    PreparedStatement preparedStatement = null;
+                    preparedStatement = conn.prepareStatement(deleteQuery);
+                    preparedStatement.setInt(1, productid); // Set the product ID as the parameter value
+
+                    int rowsAffected = preparedStatement.executeUpdate();
+                    if (rowsAffected > 0) {
+                        System.out.println("Product with ID " + productid + " deleted successfully.");
+                    } else {
+                        System.out.println("Product with ID " + productid + " not found.");
+                    }
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+
+                for(int nCtr = tableModel.getRowCount(); nCtr > 0; nCtr--){
+                    tableModel.removeRow(0);
+                }
+
+                ArrayList<Product> products = sqlite.getProduct();
+                for(int nCtr = 0; nCtr < products.size(); nCtr++){
+                    tableModel.addRow(new Object[]{
+                        products.get(nCtr).getName(), 
+                        products.get(nCtr).getStock(), 
+                        products.get(nCtr).getPrice()});
+                }
+            }
         }
-    }
 
 
 
