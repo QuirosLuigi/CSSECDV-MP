@@ -285,8 +285,8 @@ public class MgmtProduct extends javax.swing.JPanel {
             System.out.println(priceFld.getText());
 
             if (!stockFld.getText().matches("\\d+")) {
-                JOptionPane.showMessageDialog(null, "Please enter a valid integer value for stock.", "Invalid Input", JOptionPane.ERROR_MESSAGE);
-                return; // Exit the method, so the product won't be added
+            JOptionPane.showMessageDialog(null, "Please enter a valid integer value for stock.", "Invalid Input", JOptionPane.ERROR_MESSAGE);
+            return; // Exit the method, so the product won't be added
             }
         
             // Input validation for price (accepts float values)
