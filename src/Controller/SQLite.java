@@ -375,6 +375,23 @@ public class SQLite {
         return product;
     }
     
+    //Update product stock
+    public void changeProduct(String name, int newstock) {
+        String sql = "UPDATE product SET stock = ? WHERE name = ?";
+        
+        try (Connection conn = DriverManager.getConnection(driverURL);
+            PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, newstock);
+            pstmt.setString(2, name);
+
+            pstmt.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    
     /**
      * All session functions
      */

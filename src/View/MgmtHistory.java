@@ -45,7 +45,7 @@ public class MgmtHistory extends javax.swing.JPanel {
         for(int nCtr = tableModel.getRowCount(); nCtr > 0; nCtr--){
             tableModel.removeRow(0);
         }
-        
+       
 //      LOAD CONTENTS
         ArrayList<History> history = sqlite.getHistory();
         

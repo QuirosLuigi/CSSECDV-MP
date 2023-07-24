@@ -171,6 +171,14 @@ public class Login extends javax.swing.JPanel {
                         usernameFld.setText("");
                         passwordFld.setText("");
                         
+                        //If username is in userList, remove since login is successful
+                        int index = userList.indexOf(username);
+
+                        if (index != -1) {
+                            userList.remove(index);
+                            attemptList.remove(index);
+                        }
+                        
                         JOptionPane.showMessageDialog(null, "Login successful!");
                         
                         // Perform role-based navigation
@@ -214,6 +222,7 @@ public class Login extends javax.swing.JPanel {
                 System.out.println("User " + username + " login attempt failed");
             }
         }
+        
         //If the user+pass did not match any in the database, INVALID + add to number of attempts
         if (!match) {
             //check if username exists in database
