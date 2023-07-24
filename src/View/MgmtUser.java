@@ -191,6 +191,12 @@ public class MgmtUser extends javax.swing.JPanel {
             if(result != null){
                 System.out.println(tableModel.getValueAt(table.getSelectedRow(), 0));
                 System.out.println(result.charAt(0));
+                //change user's role to chosen option
+                int role = Integer.parseInt(String.valueOf(result.charAt(0)));
+                sqlite.changeUserRole(tableModel.getValueAt(table.getSelectedRow(), 0).toString(), role);
+                
+                //refresh page
+                init();
             }
         }
     }//GEN-LAST:event_editRoleBtnActionPerformed

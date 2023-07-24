@@ -245,9 +245,10 @@ public class MgmtProduct extends javax.swing.JPanel {
                         currentstock = currentstock - quantity;
                         sqlite.changeProduct(tableModel.getValueAt(table.getSelectedRow(), 0).toString(), currentstock);
                         System.out.println("Reduced stock to " + currentstock);
+                        JOptionPane.showMessageDialog(null, "Purchase successful!");
                         
                     } else {
-                        System.out.println("Error: Invalid quantity given");
+                        JOptionPane.showMessageDialog(null, "ERROR: Invalid quantity given!");
                     }
                     
                 //if yes, cancel Purchase                    
