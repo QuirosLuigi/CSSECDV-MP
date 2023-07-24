@@ -257,6 +257,7 @@ public class Frame extends javax.swing.JFrame {
         staffBtn.setVisible(false);
         managerBtn.setVisible(false);
         clientBtn.setVisible(false);
+        adminHomePnl.showPnl("home");
         frameView.show(Container, "homePnl");
         contentView.show(Content, "adminHomePnl");
     }
@@ -266,6 +267,7 @@ public class Frame extends javax.swing.JFrame {
         staffBtn.setVisible(true);
         managerBtn.setVisible(false);
         clientBtn.setVisible(false);
+        staffHomePnl.showPnl("home");
         frameView.show(Container, "homePnl");
         contentView.show(Content, "staffHomePnl");
     }
@@ -274,6 +276,7 @@ public class Frame extends javax.swing.JFrame {
         staffBtn.setVisible(false);
         managerBtn.setVisible(true);
         clientBtn.setVisible(false);
+        managerHomePnl.showPnl("home");
         frameView.show(Container, "homePnl");
         contentView.show(Content, "managerHomePnl");
     }
@@ -282,6 +285,7 @@ public class Frame extends javax.swing.JFrame {
         staffBtn.setVisible(false);
         managerBtn.setVisible(false);
         clientBtn.setVisible(true);
+        clientHomePnl.showPnl("home");
         frameView.show(Container, "homePnl");
         contentView.show(Content, "clientHomePnl");   
     }

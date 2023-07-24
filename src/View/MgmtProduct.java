@@ -331,17 +331,19 @@ public class MgmtProduct extends javax.swing.JPanel {
              {
                 PreparedStatement pstmt0 = conn.prepareStatement(sql0);
                 pstmt0 = conn.prepareStatement(sql0);
+                
                 pstmt0.setString(1, nameFld.getText()); // Set the product name as the parameter value
                 resultSet = pstmt0.executeQuery();
+                
                 if (resultSet.next()) {
-                productid = resultSet.getInt("id");
-                System.out.println(productid);
-            }
-            else{
-                System.out.println("alaws");
-            }
-
+                    productid = resultSet.getInt("id");
+                    System.out.println(productid);
                 }
+                else{
+                    System.out.println("alaws");
+                }
+
+            }
             catch (SQLException e) {
                 System.err.println("Error adding product: " + e.getMessage());
             }
@@ -352,23 +354,23 @@ public class MgmtProduct extends javax.swing.JPanel {
                 System.out.println(stockFld.getText());
                 System.out.println(priceFld.getText());
 
-            try(Connection conn = DriverManager.getConnection("jdbc:sqlite:database.db")) {
+                try(Connection conn = DriverManager.getConnection("jdbc:sqlite:database.db")) {
 
-                String updateQuery = "UPDATE product SET name = ?, stock = ?, price = ? WHERE id = ?";
-                PreparedStatement preparedStatement = null;
-                // Step 4: Execute the SQL script
-                preparedStatement = conn.prepareStatement(updateQuery);
-                preparedStatement.setString(1, nameFld.getText());
-                preparedStatement.setString(2, stockFld.getText());
-                preparedStatement.setString(3, priceFld.getText());
-                // Set the appropriate ID value to identify the row you want to update
-                preparedStatement.setInt(4, productid);
-    
-                int rowsAffected = preparedStatement.executeUpdate();
-                System.out.println(rowsAffected + " row(s) updated successfully.");
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+                    String updateQuery = "UPDATE product SET name = ?, stock = ?, price = ? WHERE id = ?";
+                    PreparedStatement preparedStatement = null;
+                    // Step 4: Execute the SQL script
+                    preparedStatement = conn.prepareStatement(updateQuery);
+                    preparedStatement.setString(1, nameFld.getText());
+                    preparedStatement.setString(2, stockFld.getText());
+                    preparedStatement.setString(3, priceFld.getText());
+                    // Set the appropriate ID value to identify the row you want to update
+                    preparedStatement.setInt(4, productid);
+
+                    int rowsAffected = preparedStatement.executeUpdate();
+                    System.out.println(rowsAffected + " row(s) updated successfully.");
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
             } 
       
             for(int nCtr = tableModel.getRowCount(); nCtr > 0; nCtr--){

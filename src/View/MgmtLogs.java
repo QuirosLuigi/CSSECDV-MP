@@ -8,6 +8,7 @@ package View;
 import Controller.SQLite;
 import Model.Logs;
 import java.util.ArrayList;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -135,14 +136,20 @@ public class MgmtLogs extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void clearBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clearBtnActionPerformed
-        
+        sqlite.emptyLogs();
+        JOptionPane.showMessageDialog(null, "Logs deleted successfully!");
+        init();
     }//GEN-LAST:event_clearBtnActionPerformed
 
     private void debugBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_debugBtnActionPerformed
-        if(sqlite.DEBUG_MODE == 1)
+        if(sqlite.DEBUG_MODE == 1) {
             sqlite.DEBUG_MODE = 0;
-        else
+            JOptionPane.showMessageDialog(null, "DEBUG_MODE DISABLED");
+        }
+        else {
             sqlite.DEBUG_MODE = 1;
+            JOptionPane.showMessageDialog(null, "DEBUG_MODE ENABLED");
+        }
     }//GEN-LAST:event_debugBtnActionPerformed
 
 

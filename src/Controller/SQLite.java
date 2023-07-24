@@ -348,6 +348,38 @@ public class SQLite {
         }
     }
     
+    public void changeUserLock(String username, int lock) {
+        String sql = "UPDATE users SET locked = ? WHERE username = ?";
+        
+        try (Connection conn = DriverManager.getConnection(driverURL);
+            PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, lock);
+            pstmt.setString(2, username);
+
+            pstmt.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    public void changeUserPassword(String username, String password) {
+        String sql = "UPDATE users SET password = ? WHERE username = ?";
+        
+        try (Connection conn = DriverManager.getConnection(driverURL);
+            PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, password);
+            pstmt.setString(2, username);
+
+            pstmt.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    
     public void removeUser(String username) {
         String sql = "DELETE FROM users WHERE username='" + username + "';";
 
@@ -389,6 +421,19 @@ public class SQLite {
 
         } catch (SQLException e) {
             e.printStackTrace();
+        }
+    }
+    
+    //empty logs
+    public void emptyLogs() {
+        String sql = "DELETE FROM logs";
+
+        try (Connection conn = DriverManager.getConnection(driverURL);
+            Statement stmt = conn.createStatement()) {
+            stmt.execute(sql);
+            System.out.println("Logs have been deleted.");
+        } catch (Exception ex) {
+            System.out.print(ex);
         }
     }
     

@@ -7,7 +7,11 @@ package View;
 
 import Controller.SQLite;
 import Model.User;
+import static View.Register.encryptPassword;
+import static View.Register.validatePassword;
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
@@ -213,8 +217,8 @@ public class MgmtUser extends javax.swing.JPanel {
             int result = JOptionPane.showConfirmDialog(null, "Are you sure you want to delete " + tableModel.getValueAt(table.getSelectedRow(), 0) + "?", "DELETE USER", JOptionPane.YES_NO_OPTION);
             
             if (result == JOptionPane.YES_OPTION) {
-                System.out.println(tableModel.getValueAt(table.getSelectedRow(), 0)); //gabi
-                //call function to delete user based on user
+                System.out.println(tableModel.getValueAt(table.getSelectedRow(), 0)); //username
+    
                 //If the user is not originally an admin, allow deletion
                 if ((int)tableModel.getValueAt(table.getSelectedRow(), 2) != 5) {
                    sqlite.removeUser(tableModel.getValueAt(table.getSelectedRow(), 0).toString());
@@ -222,6 +226,7 @@ public class MgmtUser extends javax.swing.JPanel {
                     JOptionPane.showMessageDialog(null, "Only super admins may delete existing admins");
                 }
                 
+                //refresh page
                 init();
             }
         }
@@ -238,6 +243,25 @@ public class MgmtUser extends javax.swing.JPanel {
             
             if (result == JOptionPane.YES_OPTION) {
                 System.out.println(tableModel.getValueAt(table.getSelectedRow(), 0));
+                
+                //call sql function and change user
+                //If the user is not originally an admin, allow deletion
+                int lock = Integer.parseInt(String.valueOf(tableModel.getValueAt(table.getSelectedRow(), 3)));
+                System.out.println("lock: " + lock);
+                
+                //if not admin, change the lock
+                if ((int)tableModel.getValueAt(table.getSelectedRow(), 2) != 5) {
+                   if (state.equals("lock")){
+                      sqlite.changeUserLock(tableModel.getValueAt(table.getSelectedRow(), 0).toString(), 1);
+                   } else {
+                       sqlite.changeUserLock(tableModel.getValueAt(table.getSelectedRow(), 0).toString(), 0);
+                   }
+                } else {
+                    JOptionPane.showMessageDialog(null, "Only super admins change the lock state of existing admins");
+                }
+                
+                //refresh page
+                init();
             }
         }
     }//GEN-LAST:event_lockBtnActionPerformed
@@ -258,6 +282,43 @@ public class MgmtUser extends javax.swing.JPanel {
             if (result == JOptionPane.OK_OPTION) {
                 System.out.println(password.getText());
                 System.out.println(confpass.getText());
+                
+                boolean check2 = false;
+                boolean check3 = false;
+                
+                //Check validity of password
+                //if pass
+                if (validatePassword(password.getText()))
+                    check2 = true;
+                else
+                    JOptionPane.showMessageDialog(null, "ERROR: Passwords must have "
+                            + "\n- atleast 8 characters"
+                            + "\n- a mix of lower and uppercase letters, digits, and special symbols");
+
+                //Check if password matches confirm password
+                //if pass
+                if (password.getText().equals(confpass.getText()))
+                    check3 = true;
+                else
+                    JOptionPane.showMessageDialog(null, "ERROR: Confirm password and password does not match!");
+
+
+                //Allow password change if it passes all checks
+                if (check2 && check3) {
+                    //Hash password before entering the database
+                    String encrypted = encryptPassword(password.getText());
+
+                    //call sql function and change user
+                    if ((int)tableModel.getValueAt(table.getSelectedRow(), 2) != 5) {
+                       sqlite.changeUserPassword(tableModel.getValueAt(table.getSelectedRow(), 0).toString(), encrypted);
+                       JOptionPane.showMessageDialog(null, "Password changed successfully!");
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Only super admins may change the password of existing admins");
+                    }
+                }
+                
+                //refresh page
+                init();
             }
         }
     }//GEN-LAST:event_chgpassBtnActionPerformed
