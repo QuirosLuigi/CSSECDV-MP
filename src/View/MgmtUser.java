@@ -191,9 +191,16 @@ public class MgmtUser extends javax.swing.JPanel {
             if(result != null){
                 System.out.println(tableModel.getValueAt(table.getSelectedRow(), 0));
                 System.out.println(result.charAt(0));
+                
                 //change user's role to chosen option
                 int role = Integer.parseInt(String.valueOf(result.charAt(0)));
-                sqlite.changeUserRole(tableModel.getValueAt(table.getSelectedRow(), 0).toString(), role);
+                
+                //If the user is not originally an admin, allow change of role
+                if ((int)tableModel.getValueAt(table.getSelectedRow(), 2) != 5) {
+                   sqlite.changeUserRole(tableModel.getValueAt(table.getSelectedRow(), 0).toString(), role); 
+                } else {
+                    JOptionPane.showMessageDialog(null, "Only super admins may change the role of existing admins");
+                }
                 
                 //refresh page
                 init();
@@ -206,7 +213,16 @@ public class MgmtUser extends javax.swing.JPanel {
             int result = JOptionPane.showConfirmDialog(null, "Are you sure you want to delete " + tableModel.getValueAt(table.getSelectedRow(), 0) + "?", "DELETE USER", JOptionPane.YES_NO_OPTION);
             
             if (result == JOptionPane.YES_OPTION) {
-                System.out.println(tableModel.getValueAt(table.getSelectedRow(), 0));
+                System.out.println(tableModel.getValueAt(table.getSelectedRow(), 0)); //gabi
+                //call function to delete user based on user
+                //If the user is not originally an admin, allow deletion
+                if ((int)tableModel.getValueAt(table.getSelectedRow(), 2) != 5) {
+                   sqlite.removeUser(tableModel.getValueAt(table.getSelectedRow(), 0).toString());
+                } else {
+                    JOptionPane.showMessageDialog(null, "Only super admins may delete existing admins");
+                }
+                
+                init();
             }
         }
     }//GEN-LAST:event_deleteBtnActionPerformed
