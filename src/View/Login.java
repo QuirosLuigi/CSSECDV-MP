@@ -126,6 +126,10 @@ public class Login extends javax.swing.JPanel {
             JOptionPane.showMessageDialog(null, "ERROR: Username field is blank!");
         } else if (passText.equals("")) {
             JOptionPane.showMessageDialog(null, "ERROR: Password field is blank!");
+        } else if (username.length() > 30) {
+            JOptionPane.showMessageDialog(null, "ERROR: Username exceeds limit!");
+        } else if (passText.length() > 30) {
+            JOptionPane.showMessageDialog(null, "ERROR: Password exceeds limit!");
         }
         else {
             /* Compare Encrypted password on input vs Encrypted Password on Database */
@@ -243,7 +247,7 @@ public class Login extends javax.swing.JPanel {
                     //if first attempt, add to Arraylist users and attempts
                     userList.add(username);
                     attemptList.add(1);
-                    System.out.println("Added user to userList");
+                    System.out.println(username + " | attempt: 1");
                 }
             }
         }    

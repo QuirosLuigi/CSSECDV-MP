@@ -136,6 +136,8 @@ public class Register extends javax.swing.JPanel {
         //if pass
         if (usernameFld.getText().equals("")) 
             JOptionPane.showMessageDialog(null, "ERROR: Username field is blank!");
+        else if (usernameFld.getText().length() > 30)
+            JOptionPane.showMessageDialog(null, "ERROR: Username exceeds limit!");
         else if (match==0)
             check1 = true;
         else
@@ -144,7 +146,9 @@ public class Register extends javax.swing.JPanel {
         //Check validity of password
         //if pass
         String passwordstring = new String(((JPasswordField) passwordFld).getPassword());
-        if (validatePassword(passwordstring))
+        if (passwordstring.length() > 30)
+            JOptionPane.showMessageDialog(null, "ERROR: Password exceeds limit!");
+        else if (validatePassword(passwordstring))
             check2 = true;
         else
             JOptionPane.showMessageDialog(null, "ERROR: Passwords must have "
@@ -155,7 +159,9 @@ public class Register extends javax.swing.JPanel {
         //if pass
         String passwordstring1 = new String(((JPasswordField) passwordFld).getPassword());
         String passwordstring2 = new String(((JPasswordField) confpassFld).getPassword());
-        if (passwordstring1.equals(passwordstring2))
+        if (passwordstring2.length() > 30)
+            JOptionPane.showMessageDialog(null, "ERROR: Confirm Password exceeds limit!");
+        else if (passwordstring1.equals(passwordstring2))
             check3 = true;
         else
             JOptionPane.showMessageDialog(null, "ERROR: Confirm password and password does not match!");

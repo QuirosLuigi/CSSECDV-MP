@@ -201,24 +201,30 @@ public class MgmtHistory extends javax.swing.JPanel {
                 tableModel.removeRow(0);
             }
 
-//          LOAD CONTENTS
-            ArrayList<History> history = sqlite.getHistory();
-            for(int nCtr = 0; nCtr < history.size(); nCtr++){
-                if(searchFld.getText().contains(history.get(nCtr).getUsername()) || 
-                   history.get(nCtr).getUsername().contains(searchFld.getText()) || 
-                   searchFld.getText().contains(history.get(nCtr).getName()) || 
-                   history.get(nCtr).getName().contains(searchFld.getText())){
+            //Prevent buffer overload
+            if (searchFld.getText().length() > 50) {
+                JOptionPane.showMessageDialog(null, "ERROR: Input exceeds limit!");
+            } else {
                 
-                    Product product = sqlite.getProduct(history.get(nCtr).getName());
-                    tableModel.addRow(new Object[]{
-                        history.get(nCtr).getUsername(), 
-                        history.get(nCtr).getName(), 
-                        history.get(nCtr).getStock(), 
-                        product.getPrice(), 
-                        product.getPrice() * history.get(nCtr).getStock(), 
-                        history.get(nCtr).getTimestamp()
-                    });
-                }
+//          LOAD CONTENTS
+                 ArrayList<History> history = sqlite.getHistory();
+                 for(int nCtr = 0; nCtr < history.size(); nCtr++){
+                    if(searchFld.getText().contains(history.get(nCtr).getUsername()) || 
+                        history.get(nCtr).getUsername().contains(searchFld.getText()) || 
+                        searchFld.getText().contains(history.get(nCtr).getName()) || 
+                        history.get(nCtr).getName().contains(searchFld.getText())){
+
+                         Product product = sqlite.getProduct(history.get(nCtr).getName());
+                         tableModel.addRow(new Object[]{
+                             history.get(nCtr).getUsername(), 
+                             history.get(nCtr).getName(), 
+                             history.get(nCtr).getStock(), 
+                             product.getPrice(), 
+                             product.getPrice() * history.get(nCtr).getStock(), 
+                             history.get(nCtr).getTimestamp()
+                         });
+                    }
+                } 
             }
         }
     }//GEN-LAST:event_searchBtnActionPerformed

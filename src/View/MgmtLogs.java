@@ -136,8 +136,12 @@ public class MgmtLogs extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void clearBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clearBtnActionPerformed
-        sqlite.emptyLogs();
-        JOptionPane.showMessageDialog(null, "Logs deleted successfully!");
+        int result = JOptionPane.showConfirmDialog(null, "Are you sure you want to delete the log entries?", "DELETE LOGS", JOptionPane.YES_NO_OPTION);
+            
+        if (result == JOptionPane.YES_OPTION) {
+            sqlite.emptyLogs();
+            JOptionPane.showMessageDialog(null, "Logs deleted successfully!");
+        }
         init();
     }//GEN-LAST:event_clearBtnActionPerformed
 
