@@ -241,7 +241,6 @@ public class MgmtProduct extends javax.swing.JPanel {
                         //Add purchase to History database
                         String currenttimestamp = new Timestamp(new Date().getTime()).toString();
                         sqlite.addHistory(session.getUsername(), tableModel.getValueAt(table.getSelectedRow(), 0).toString(), quantity, currenttimestamp);
-                        System.out.println("Added purchase: " + session.getUsername() + " | " + tableModel.getValueAt(table.getSelectedRow(), 0).toString() + " | " + quantity + " | " + currenttimestamp);
                         
                         //Reduce stock number / update Product database
                         currentstock = currentstock - quantity;
@@ -280,9 +279,6 @@ public class MgmtProduct extends javax.swing.JPanel {
         int result = JOptionPane.showConfirmDialog(null, message, "ADD PRODUCT", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null);
 
         if (result == JOptionPane.OK_OPTION) {
-            System.out.println(nameFld.getText());
-            System.out.println(stockFld.getText());
-            System.out.println(priceFld.getText());
 
             if (!stockFld.getText().matches("\\d+")) {
             JOptionPane.showMessageDialog(null, "Please enter a valid integer value for stock.", "Invalid Input", JOptionPane.ERROR_MESSAGE);
@@ -355,7 +351,7 @@ public class MgmtProduct extends javax.swing.JPanel {
                 System.out.println(productid);
             }
             else{
-                System.out.println("alaws");
+                System.out.println("Error with product id");
             }
 
                 }

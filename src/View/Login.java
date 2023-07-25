@@ -123,9 +123,9 @@ public class Login extends javax.swing.JPanel {
         
         //Reject blank fields
         if (username.equals("")) {
-                JOptionPane.showMessageDialog(null, "ERROR: Username field is blank!");
+            JOptionPane.showMessageDialog(null, "ERROR: Username field is blank!");
         } else if (passText.equals("")) {
-                JOptionPane.showMessageDialog(null, "ERROR: Password field is blank!");
+            JOptionPane.showMessageDialog(null, "ERROR: Password field is blank!");
         }
         else {
             /* Compare Encrypted password on input vs Encrypted Password on Database */
@@ -141,9 +141,6 @@ public class Login extends javax.swing.JPanel {
             }
             //if username-password combination exists
             else if (role != -1) {
-                /* Turn off CAPTCHA
-
-
                 //CAPTCHA Pop-up message
                 String captchaCode = createRandom(6);
                 JTextField captchaInput = new JTextField(10);
@@ -158,7 +155,6 @@ public class Login extends javax.swing.JPanel {
                     //If input matches the captcha
                     if (captchaInput.getText().equals(captchaCode)) {
 
-                */
                         match = true;
                         //Add login user to the logs
                         sqlite.addLogs("NOTICE", usernameFld.getText(), "User login successful", new Timestamp(new Date().getTime()).toString());
@@ -204,20 +200,14 @@ public class Login extends javax.swing.JPanel {
                                 JOptionPane.showMessageDialog(null,"An error has occured. Please try again later.");
                                 break;
                         }
-                    
-                /* TURN OFF CAPTCHA
                     } else {
                         //Entered code does not match captcha code
                         JOptionPane.showMessageDialog(null, "Entered code does not match. Login failed.");
                     } 
                 } else {
                     JOptionPane.showMessageDialog(null, "Entered code does not match. Login failed.");
-                }*/
-                
-                
-                
-            } 
-            else {
+                }
+            } else {
                 JOptionPane.showMessageDialog(null, "ERROR: Invalid Username or Password!");
                 System.out.println("User " + username + " login attempt failed");
             }
@@ -227,6 +217,9 @@ public class Login extends javax.swing.JPanel {
         if (!match) {
             //check if username exists in database
             boolean userExists = sqlite.validateUser(username);
+            //Add failed login to the logs
+            sqlite.addLogs("NOTICE", username, "User login failed", new Timestamp(new Date().getTime()).toString());
+
             
             //check is username exists in userList
             if (userExists) {
