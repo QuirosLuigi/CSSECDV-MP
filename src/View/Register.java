@@ -163,11 +163,10 @@ public class Register extends javax.swing.JPanel {
         
         //Check if password matches confirm password
         //if pass
-        String passwordstring1 = new String(((JPasswordField) passwordFld).getPassword());
         String passwordstring2 = new String(((JPasswordField) confpassFld).getPassword());
         if (passwordstring2.length() > 30)
             JOptionPane.showMessageDialog(null, "ERROR: Confirm Password exceeds limit!");
-        else if (passwordstring1.equals(passwordstring2))
+        else if (passwordstring.equals(passwordstring2))
             check3 = true;
         else
             JOptionPane.showMessageDialog(null, "ERROR: Confirm password and password does not match!");
