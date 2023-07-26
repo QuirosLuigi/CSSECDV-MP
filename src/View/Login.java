@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Date;
 import java.util.Random;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
@@ -121,18 +123,22 @@ public class Login extends javax.swing.JPanel {
         String passText = new String(((JPasswordField) passwordFld).getPassword());
         Boolean match = false;
         
-        //Reject blank fields
-        if (username.equals("")) {
+        //Reject invalid input
+        if (username.equals(""))
             JOptionPane.showMessageDialog(null, "ERROR: Username field is blank!");
-        } else if (passText.equals("")) {
+        else if (passText.equals(""))
             JOptionPane.showMessageDialog(null, "ERROR: Password field is blank!");
-        } else if (username.length() > 30) {
+        else if (username.length() > 30)
             JOptionPane.showMessageDialog(null, "ERROR: Username exceeds limit!");
-        } else if (passText.length() > 30) {
+        else if (passText.length() > 30)
             JOptionPane.showMessageDialog(null, "ERROR: Password exceeds limit!");
-        }
+        else if (checkSymbols(username))
+            JOptionPane.showMessageDialog(null, "ERROR: Invalid characters used!");
+        else if (checkSymbols(passText))
+            JOptionPane.showMessageDialog(null, "ERROR: Invalid characters used!");
+
         else {
-            /* Compare Encrypted password on input vs Encrypted Password on Database */
+            // Compare Encrypted password on input vs Encrypted Password on Database
             String password2 = encryptPassword(passText);
   
             //check if it belongs to registered users
@@ -305,4 +311,15 @@ public class Login extends javax.swing.JPanel {
 
         return stringBuilder.toString();
     }
+    
+    public static boolean checkSymbols(String input) {
+        // Regular expression to check for invalid symbols
+        String invalidSymbolsRegex = "[<>&\"'{};\\/\\\\|]";
+
+        Pattern pattern = Pattern.compile(invalidSymbolsRegex);
+        Matcher matcher = pattern.matcher(input);
+
+        return matcher.find();
+    }
+    
 }

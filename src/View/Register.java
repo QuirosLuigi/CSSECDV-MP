@@ -7,6 +7,8 @@ import Controller.SQLite;
 import Model.User;
 import java.sql.Timestamp;
 import java.util.Date;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
@@ -138,6 +140,8 @@ public class Register extends javax.swing.JPanel {
             JOptionPane.showMessageDialog(null, "ERROR: Username field is blank!");
         else if (usernameFld.getText().length() > 30)
             JOptionPane.showMessageDialog(null, "ERROR: Username exceeds limit!");
+        else if (checkSymbols(usernameFld.getText()))
+            JOptionPane.showMessageDialog(null, "ERROR: Invalid characters used!");
         else if (match==0)
             check1 = true;
         else
@@ -148,6 +152,8 @@ public class Register extends javax.swing.JPanel {
         String passwordstring = new String(((JPasswordField) passwordFld).getPassword());
         if (passwordstring.length() > 30)
             JOptionPane.showMessageDialog(null, "ERROR: Password exceeds limit!");
+        else if (checkSymbols(passwordstring))
+            JOptionPane.showMessageDialog(null, "ERROR: Invalid characters used!");
         else if (validatePassword(passwordstring))
             check2 = true;
         else
@@ -237,6 +243,16 @@ public class Register extends javax.swing.JPanel {
         // Check if input contains a mix of lowercase and uppercase letters, digits, and special symbols
         String pattern = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[a-zA-Z\\d@$!%*?&]+$";
         return cs.matches(pattern);
+    }
+    
+    public static boolean checkSymbols(String input) {
+        // Regular expression to check for invalid symbols
+        String invalidSymbolsRegex = "[<>&\"'{};\\/\\\\|]";
+
+        Pattern pattern = Pattern.compile(invalidSymbolsRegex);
+        Matcher matcher = pattern.matcher(input);
+
+        return matcher.find();
     }
 }
 

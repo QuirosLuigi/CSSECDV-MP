@@ -254,6 +254,7 @@ public class MgmtProduct extends javax.swing.JPanel {
                     
                 //if yes, cancel Purchase                    
                 } catch (NumberFormatException e) {
+                    JOptionPane.showMessageDialog(null, "Invalid amount given!");
                     System.out.println("Error: The string cannot be converted to an integer. Purchase CANCELLED");
                 }
                 
